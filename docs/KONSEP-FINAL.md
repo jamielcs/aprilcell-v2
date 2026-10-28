@@ -24,6 +24,7 @@ Mockup tampilan: `mockup-aprilcell-v2.html` (data contoh).
 
 ## D. Penjualan Produk — menu "Jual Produk"
 14. Form terpisah dari jasa (master tetap satu). Isi: pilih produk dari master, pilih level harga (ecer/grosir 1/grosir 2), jumlah, rekening tujuan, tanggal.
+30. **Pola halaman pencatatan (KOREKSI user 2026-10-29 00:29, berlaku Jual Produk & Catat Jasa):** tambah/edit data lewat **MODAL** (popup), BUKAN form nempel di halaman; halaman isinya **satu kolom penuh berisi TABEL LENGKAP** — semua detail tiap transaksi kelihatan: tanggal & jam, produk/jasa, level harga, jumlah, harga, total, **pembeli bayar pakai apa** (tunai/transfer/QRIS/e-wallet), **masuk ke rekening apa**, saldo aplikasi mana yang terpotong / diteruskan dari saldo apa, untung/fee, dan tombol edit/hapus. (Untuk jasa kolomnya: nominal pokok, fee, total diterima, bayar pakai apa, masuk rekening apa, diteruskan dari saldo apa.)
 15. Point 2 — Mutasi keluar WAJIB OTOMATIS: satu kali catat penjualan → saldo aplikasi produk itu berkurang sendiri senilai harga beli; mutasi tinggal tampil di buku mutasi, bukan input terpisah.
 16. Point 16 — Uang hasil penjualan: rekening tujuan DIPILIH TIAP TRANSAKSI sesuai cara bayar pembeli (Cash tunai / transfer bank / e-wallet / QRIS — QRIS dicatat ke rekening tempat uangnya cair, atau rekening khusus "QRIS"), terisi default agar tetap cepat.
 
