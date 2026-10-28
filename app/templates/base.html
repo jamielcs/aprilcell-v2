@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{% block title %}Catatan {{ shop_name }}{% endblock %}</title>
+<title>{% block title %}{{ shop_name }}{% endblock %}</title>
 <link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
 <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -25,7 +25,7 @@
   <aside class="sidebar d-none d-md-flex flex-column">
     <div class="brand d-flex align-items-center gap-2">
       {% if logo_file %}<img src="{{ url_for('static', filename='uploads/' ~ logo_file) }}" alt="Logo" class="brand-logo">{% else %}<span class="brand-badge"><i class="fa-solid fa-store"></i></span>{% endif %}
-      <span>Catatan <span>{{ shop_name }}</span></span>
+      <span>{{ shop_name }}</span>
     </div>
     <nav class="nav flex-column gap-1">
       <div class="nav-group">Utama</div>

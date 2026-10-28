@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 echo ============================================
-echo  Catatan APRILcell
+echo  APRILcell
 echo  Membuka http://127.0.0.1:5000
 echo  Tekan Ctrl+C untuk menghentikan server.
 echo ============================================

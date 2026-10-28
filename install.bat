@@ -2,7 +2,7 @@
 setlocal
 cd /d "%~dp0"
 echo ============================================
-echo  Catatan APRILcell - Instalasi
+echo  APRILcell - Instalasi
 echo ============================================
 where python >nul 2>nul
 if errorlevel 1 goto nopython

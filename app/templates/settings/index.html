@@ -1,5 +1,5 @@
 {% extends 'base.html' %}{% block content %}<h4>Pengaturan</h4>
-<div class="card p-3 mb-3"><h6>Info Aplikasi</h6><p>Catatan APRILcell — aplikasi keuangan pribadi lokal. User: <b>{{ user.username if user else '' }}</b><br>Database: <code>instance/catatan_aprilcell.db</code> (SQLite lokal, permanen).<br>Zona waktu laporan: Asia/Jakarta.</p>
+<div class="card p-3 mb-3"><h6>Info Aplikasi</h6><p>{{ shop_name }} — aplikasi keuangan pribadi lokal. User: <b>{{ user.username if user else '' }}</b><br>Database: <code>instance/catatan_aprilcell.db</code> (SQLite lokal, permanen).<br>Zona waktu laporan: Asia/Jakarta.</p>
 <h6>Pemulihan Akun Lokal (tanpa membocorkan password lama)</h6><ol><li>Tutup aplikasi.</li><li>Backup folder <code>instance/</code> terlebih dahulu.</li><li>Hubungi administrator / jalankan prosedur reset lokal terdokumentasi di README — password lama tersimpan sebagai hash dan tidak bisa dibaca kembali, hanya bisa diganti lewat prosedur reset offline di komputer sendiri.</li></ol></div>
 <div class="card p-3 mb-3"><h6>Ganti Password</h6><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="change_password">
 <div class="mb-2"><label class="form-label">Password Saat Ini</label><input type="password" class="form-control" name="current_password" required></div>
