@@ -92,6 +92,10 @@ input.inp,select.inp{width:100%;padding:10px 12px;border:1px solid var(--line);b
   .bottomnav button.on{color:var(--brand)}
   table{font-size:12.5px}
 }
+
+.backdrop{display:none;position:fixed;inset:0;background:rgba(10,15,26,.55);z-index:80;align-items:flex-start;justify-content:center;padding:26px 14px;overflow-y:auto}
+.backdrop.open{display:flex}
+.modal-card{background:var(--card);color:var(--ink);border-radius:18px;box-shadow:var(--shadow);width:100%;max-width:520px;padding:20px;animation:fade .2s ease}
 </style>
 </head>
 <body>
@@ -168,64 +172,37 @@ input.inp,select.inp{width:100%;padding:10px 12px;border:1px solid var(--line);b
 
     <!-- ================= JUAL PRODUK ================= -->
     <section class="view" id="v-jual">
-      <div class="grid g2">
-        <div class="card">
-          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-cart-shopping" style="color:var(--brand)"></i>Catat Penjualan Produk</div>
-          <label class="fl">Produk</label>
-          <select class="inp"><option>Pulsa XL — 10.000</option><option>Pulsa Telkomsel — 25.000</option><option>Kabel Data USB-C — 1 meter</option></select>
-          <label class="fl">Harga untuk</label>
-          <div class="seg"><button class="on">Ecer Rp 12.000</button><button>Grosir 1 Rp 11.500</button><button>Grosir 2 Rp 11.000</button></div>
-          <label class="fl">Jumlah</label>
-          <input class="inp" type="number" value="1">
-          <label class="fl">Pembeli bayar ke (Point 16)</label>
-          <select class="inp"><option>Cash (tunai)</option><option>BRI (transfer)</option><option>DANA Rudi</option><option>QRIS</option></select>
-          <label class="fl">Tanggal</label>
-          <input class="inp" type="date" value="2026-10-29">
-          <div class="note" style="margin-top:14px"><i class="fa-solid fa-bolt"></i> Otomatis: saldo <b>Aplikasi A</b> berkurang <b>Rp 9.800</b> (harga beli) &amp; untung <b>Rp 2.200</b> tercatat. Om nggak perlu input dua kali.</div>
-          <button class="btn btn-brand" style="margin-top:14px;width:100%;justify-content:center"><i class="fa-solid fa-floppy-disk"></i>Simpan Penjualan</button>
+      <div class="card">
+        <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-cart-shopping" style="color:var(--brand)"></i>Penjualan Produk — Hari Ini
+          <span style="margin-left:auto"><button class="btn btn-brand" onclick="openModal('mJual')"><i class="fa-solid fa-plus"></i>Tambah Penjualan</button></span>
         </div>
-        <div class="card">
-          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-receipt" style="color:var(--brand)"></i>Penjualan Hari Ini</div>
-          <table>
-            <tr><th>Jam</th><th>Produk</th><th>Harga</th><th>Untung</th><th></th></tr>
-            <tr><td>09:12</td><td>Pulsa XL 10.000</td><td>Rp 12.000</td><td style="color:var(--green);font-weight:700">+2.200</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
-            <tr><td>10:03</td><td>Kabel Data USB-C</td><td>Rp 25.000</td><td style="color:var(--green);font-weight:700">+8.000</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
-            <tr><td>11:47</td><td>Pulsa Telkomsel 25.000</td><td>Rp 28.500</td><td style="color:var(--green);font-weight:700">+2.750</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
-          </table>
-          <div class="ds" style="font-size:12.5px;color:var(--muted);margin-top:10px">Salah input? Tinggal klik pensil — saldo &amp; untung ikut dibenerin otomatis.</div>
+        <div style="overflow-x:auto">
+        <table>
+          <tr><th>Tanggal &amp; Jam</th><th>Produk</th><th>Level</th><th>Jml</th><th>Harga</th><th>Total</th><th>Pembeli Bayar Pakai</th><th>Masuk ke Rekening</th><th>Saldo Aplikasi Terpotong</th><th>Untung</th><th></th></tr>
+          <tr><td>29 Okt, 09:12</td><td><b>Pulsa XL 10.000</b></td><td>Ecer</td><td>1</td><td>12.000</td><td><b>12.000</b></td><td>Tunai</td><td>Cash</td><td>Aplikasi A −9.800</td><td style="color:var(--green);font-weight:700">+2.200</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+          <tr><td>29 Okt, 10:03</td><td><b>Kabel Data USB-C</b></td><td>Ecer</td><td>1</td><td>25.000</td><td><b>25.000</b></td><td>QRIS</td><td>QRIS</td><td>— (stok barang −1)</td><td style="color:var(--green);font-weight:700">+8.000</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+          <tr><td>29 Okt, 11:47</td><td><b>Pulsa Telkomsel 25.000</b></td><td>Grosir 1</td><td>2</td><td>27.500</td><td><b>55.000</b></td><td>Transfer</td><td>BRI</td><td>Aplikasi A −49.000</td><td style="color:var(--green);font-weight:700">+6.000</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+        </table>
         </div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:10px">Satu tabel lengkap, satu kolom penuh — semua detail kelihatan: bayar pakai apa, masuk rekening mana, saldo aplikasi mana yang kepotong. Tambah/edit lewat <b>modal</b>, bukan form di halaman.</div>
       </div>
     </section>
 
     <!-- ================= CATAT JASA ================= -->
     <section class="view" id="v-jasa">
-      <div class="grid g2">
-        <div class="card">
-          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-hand-holding-dollar" style="color:var(--brand)"></i>Catat Jasa</div>
-          <label class="fl">Jenis jasa</label>
-          <select class="inp"><option>Isi E-Wallet — DANA</option><option>Isi E-Wallet — GoPay</option><option>Tarik Tunai BRILink</option><option>Transfer Antar Bank</option></select>
-          <label class="fl">Nominal pokok (uang yang diteruskan)</label>
-          <input class="inp" type="text" value="Rp 100.000">
-          <label class="fl">Fee admin (keuntungan om — ketik manual)</label>
-          <input class="inp" type="text" value="Rp 2.500">
-          <label class="fl">Pelanggan bayar ke</label>
-          <select class="inp"><option>Cash (tunai)</option><option>BRI (transfer)</option><option>QRIS</option></select>
-          <label class="fl">Diteruskan dari saldo</label>
-          <select class="inp"><option>DANA Rudi</option><option>BRI</option><option>GoPay</option></select>
-          <label class="fl">Tanggal</label>
-          <input class="inp" type="date" value="2026-10-29">
-          <div class="note" style="margin-top:14px"><i class="fa-solid fa-circle-info"></i> Pokok Rp 100.000 itu <b>uang lewat</b> — bukan keuntungan. Yang tercatat sebagai untung cuma fee <b>Rp 2.500</b>.</div>
-          <button class="btn btn-green" style="margin-top:14px;width:100%;justify-content:center"><i class="fa-solid fa-floppy-disk"></i>Simpan Jasa</button>
+      <div class="card">
+        <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-hand-holding-dollar" style="color:var(--brand)"></i>Jasa — Hari Ini
+          <span style="margin-left:auto"><button class="btn btn-green" onclick="openModal('mJasa')"><i class="fa-solid fa-plus"></i>Tambah Jasa</button></span>
         </div>
-        <div class="card">
-          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-receipt" style="color:var(--brand)"></i>Jasa Hari Ini</div>
-          <table>
-            <tr><th>Jam</th><th>Jasa</th><th>Pokok</th><th>Fee</th><th></th></tr>
-            <tr><td>08:55</td><td>Isi DANA</td><td>Rp 100.000</td><td style="color:var(--green);font-weight:700">+2.500</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
-            <tr><td>10:20</td><td>Tarik Tunai</td><td>Rp 500.000</td><td style="color:var(--green);font-weight:700">+5.000</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
-            <tr><td>12:05</td><td>Isi GoPay</td><td>Rp 50.000</td><td style="color:var(--green);font-weight:700">+2.000</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
-          </table>
+        <div style="overflow-x:auto">
+        <table>
+          <tr><th>Tanggal &amp; Jam</th><th>Jenis Jasa</th><th>Nominal Pokok</th><th>Fee (Untung)</th><th>Total Diterima</th><th>Pelanggan Bayar Pakai</th><th>Masuk ke Rekening</th><th>Diteruskan dari Saldo</th><th></th></tr>
+          <tr><td>29 Okt, 08:55</td><td><b>Isi E-Wallet DANA</b></td><td>100.000</td><td style="color:var(--green);font-weight:700">+2.500</td><td>102.500</td><td>Tunai</td><td>Cash</td><td>DANA Rudi</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+          <tr><td>29 Okt, 10:20</td><td><b>Tarik Tunai BRILink</b></td><td>500.000</td><td style="color:var(--green);font-weight:700">+5.000</td><td>505.000</td><td>Transfer</td><td>BRI</td><td>Cash (uang tunai keluar)</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+          <tr><td>29 Okt, 12:05</td><td><b>Isi E-Wallet GoPay</b></td><td>50.000</td><td style="color:var(--green);font-weight:700">+2.000</td><td>52.000</td><td>QRIS</td><td>QRIS</td><td>DANA Rudi</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+        </table>
         </div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:10px">Pokok = uang lewat (bukan untung). Yang jadi keuntungan cuma kolom <b>Fee</b>. Tambah/edit lewat <b>modal</b>.</div>
       </div>
     </section>
 
@@ -332,6 +309,58 @@ input.inp,select.inp{width:100%;padding:10px 12px;border:1px solid var(--line);b
   <button data-go="saldoapp"><i class="fa-solid fa-mobile-screen-button"></i>Saldo App</button>
 </nav>
 
+<!-- ================= MODAL JUAL PRODUK ================= -->
+<div class="backdrop" id="mJual">
+  <div class="modal-card">
+    <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-cart-shopping" style="color:var(--brand)"></i>Tambah Penjualan Produk
+      <button class="mini-btn" style="margin-left:auto" onclick="closeModal('mJual')"><i class="fa-solid fa-xmark"></i></button></div>
+    <label class="fl">Produk</label>
+    <select class="inp"><option>Pulsa XL — 10.000</option><option>Pulsa Telkomsel — 25.000</option><option>Kabel Data USB-C — 1 meter</option></select>
+    <label class="fl">Harga untuk</label>
+    <div class="seg"><button class="on">Ecer Rp 12.000</button><button>Grosir 1 Rp 11.500</button><button>Grosir 2 Rp 11.000</button></div>
+    <label class="fl">Jumlah</label>
+    <input class="inp" type="number" value="1">
+    <label class="fl">Pembeli bayar pakai apa</label>
+    <select class="inp"><option>Tunai</option><option>Transfer</option><option>QRIS</option><option>E-Wallet</option></select>
+    <label class="fl">Uang masuk ke rekening</label>
+    <select class="inp"><option>Cash</option><option>BRI</option><option>DANA Rudi</option><option>QRIS</option></select>
+    <label class="fl">Tanggal</label>
+    <input class="inp" type="date" value="2026-10-29">
+    <div class="note" style="margin-top:14px"><i class="fa-solid fa-bolt"></i> Otomatis: saldo <b>Aplikasi A</b> berkurang <b>Rp 9.800</b> (harga beli) &amp; untung <b>Rp 2.200</b> tercatat.</div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="closeModal('mJual')">Batal</button>
+      <button class="btn btn-brand" style="flex:2;justify-content:center" onclick="closeModal('mJual')"><i class="fa-solid fa-floppy-disk"></i>Simpan Penjualan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MODAL CATAT JASA ================= -->
+<div class="backdrop" id="mJasa">
+  <div class="modal-card">
+    <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-hand-holding-dollar" style="color:var(--brand)"></i>Tambah Jasa
+      <button class="mini-btn" style="margin-left:auto" onclick="closeModal('mJasa')"><i class="fa-solid fa-xmark"></i></button></div>
+    <label class="fl">Jenis jasa</label>
+    <select class="inp"><option>Isi E-Wallet — DANA</option><option>Isi E-Wallet — GoPay</option><option>Tarik Tunai BRILink</option><option>Transfer Antar Bank</option></select>
+    <label class="fl">Nominal pokok (uang yang diteruskan)</label>
+    <input class="inp" type="text" value="Rp 100.000">
+    <label class="fl">Fee admin (keuntungan om — ketik manual)</label>
+    <input class="inp" type="text" placeholder="cth: 2500">
+    <label class="fl">Pelanggan bayar pakai apa</label>
+    <select class="inp"><option>Tunai</option><option>Transfer</option><option>QRIS</option><option>E-Wallet</option></select>
+    <label class="fl">Uang masuk ke rekening</label>
+    <select class="inp"><option>Cash</option><option>BRI</option><option>QRIS</option></select>
+    <label class="fl">Diteruskan dari saldo</label>
+    <select class="inp"><option>DANA Rudi</option><option>BRI</option><option>GoPay</option></select>
+    <label class="fl">Tanggal</label>
+    <input class="inp" type="date" value="2026-10-29">
+    <div class="note" style="margin-top:14px"><i class="fa-solid fa-circle-info"></i> Pokok itu <b>uang lewat</b> — yang tercatat sebagai untung cuma fee-nya.</div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button class="btn btn-ghost" style="flex:1;justify-content:center" onclick="closeModal('mJasa')">Batal</button>
+      <button class="btn btn-green" style="flex:2;justify-content:center" onclick="closeModal('mJasa')"><i class="fa-solid fa-floppy-disk"></i>Simpan Jasa</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const titles={dashboard:"Dashboard",jual:"Jual Produk",jasa:"Catat Jasa",master:"Produk & Jasa",saldoapp:"Saldo Aplikasi",untung:"Keuntungan"};
 function go(id){
@@ -371,6 +400,10 @@ document.querySelectorAll('.nav-item:not([data-go])').forEach(n=>{
   });
 });
 document.querySelectorAll('.seg').forEach(seg=>seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')})));
+
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.backdrop').forEach(b=>b.addEventListener('click',e=>{if(e.target===b)b.classList.remove('open')}));
 const tb=document.getElementById('themeBtn');
 tb.addEventListener('click',()=>{
   const h=document.documentElement;
