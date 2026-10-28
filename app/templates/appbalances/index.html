@@ -1,0 +1,80 @@
+{% extends 'base.html' %}{% block content %}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  <h4 class="mb-0"><i class="fa-solid fa-mobile-screen-button"></i> Saldo Aplikasi</h4>
+  <span class="chip">Total: <b>{{ total|rupiah }}</b></span>
+  <span class="ms-auto"></span>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalApp"><i class="fa-solid fa-plus"></i> Tambah Aplikasi</button>
+</div>
+
+<div class="row g-3">
+{% for a in apps %}
+  <div class="col-md-6 col-lg-4">
+    <div class="card p-3 h-100 {% if a.is_active and a.is_low %}low-warn{% endif %}">
+      <div class="d-flex align-items-start">
+        <div>
+          <div class="fw-bold fs-6"><i class="fa-solid fa-bolt text-warning"></i> {{ a.name }}{% if not a.is_active %} <span class="chip red">Nonaktif</span>{% endif %}</div>
+          <div class="small text-muted">{{ a.serves or '—' }}</div>
+        </div>
+        <span class="ms-auto"></span>
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editApp{{ a.id }}"><i class="fa-solid fa-pen"></i></button>
+      </div>
+      <div class="fs-3 money my-2 {% if a.is_active and a.is_low %}text-danger{% endif %}">{{ a.balance|rupiah }}{% if a.is_active and a.is_low %} <i class="fa-solid fa-triangle-exclamation"></i>{% endif %}</div>
+      <div class="small text-muted">Batas minimum {{ a.min_balance|rupiah }} · {% if a.is_active and a.is_low %}<b class="text-danger">MENIPIS</b>{% else %}Aman{% endif %}</div>
+      <div class="small mt-2">Bulan ini — deposit: <span class="text-success fw-bold">{{ rekap[a.id].deposit|rupiah }}</span> · terpakai: <span class="text-danger fw-bold">{{ rekap[a.id].terpakai|rupiah }}</span></div>
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-primary flex-grow-1" data-bs-toggle="modal" data-bs-target="#deposit{{ a.id }}"><i class="fa-solid fa-plus"></i> Tambah Saldo</button>
+        <a class="btn btn-outline-secondary flex-grow-1" href="{{ url_for('appbalances.detail', aid=a.id) }}"><i class="fa-solid fa-list"></i> Buku Mutasi</a>
+      </div>
+    </div>
+  </div>
+
+  {# Modal deposit #}
+  <div class="modal fade" id="deposit{{ a.id }}" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <form method="post" action="{{ url_for('appbalances.deposit', aid=a.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-plus"></i> Tambah Saldo — {{ a.name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <div class="mb-2"><label class="form-label">Nominal Deposit (Rp)</label><input class="form-control" name="amount" required placeholder="cth: 500000"></div>
+      <div class="mb-2"><label class="form-label">Cara Catat</label>
+        <div class="form-check"><input class="form-check-input" type="radio" name="mode" value="nyambung" id="ny{{ a.id }}" checked><label class="form-check-label" for="ny{{ a.id }}"><b>Nyambung</b> — potong otomatis dari rekening sumber (saldo rekening ikut berkurang)</label></div>
+        <div class="form-check"><input class="form-check-input" type="radio" name="mode" value="manual" id="mn{{ a.id }}"><label class="form-check-label" for="mn{{ a.id }}"><b>Manual</b> — catat lepas, rekening utama tidak disentuh (pengecualian)</label></div>
+      </div>
+      <div class="mb-2"><label class="form-label">Rekening Sumber (untuk mode Nyambung)</label><select class="form-select" name="source_account_id">{% for ac in accounts %}<option value="{{ ac.id }}">{{ ac.name }} ({{ ac.balance|rupiah }})</option>{% endfor %}</select></div>
+      <div class="mb-2"><label class="form-label">Tanggal</label><input class="form-control" type="datetime-local" name="date"></div>
+      <div class="mb-2"><label class="form-label">Keterangan</label><input class="form-control" name="note" placeholder="cth: deposit mingguan"></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Deposit</button></div>
+    </form>
+  </div></div></div>
+
+  {# Modal edit aplikasi #}
+  <div class="modal fade" id="editApp{{ a.id }}" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+    <form method="post" action="{{ url_for('appbalances.edit', aid=a.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-pen"></i> Edit {{ a.name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body">
+      <div class="mb-2"><label class="form-label">Nama Aplikasi</label><input class="form-control" name="name" value="{{ a.name }}" required></div>
+      <div class="mb-2"><label class="form-label">Melayani Operator</label><input class="form-control" name="serves" value="{{ a.serves }}" placeholder="cth: XL, Telkomsel, Indosat"></div>
+      <div class="mb-2"><label class="form-label">Batas Minimum (peringatan menipis)</label><input class="form-control" name="min_balance" value="{{ a.min_balance }}"></div>
+    </div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary">Simpan</button></div>
+    </form>
+  </div></div></div>
+{% else %}
+  <div class="col-12"><div class="alert alert-info">Belum ada aplikasi provider. Klik <b>Tambah Aplikasi</b> — contoh: satu aplikasi untuk XL &amp; Telkomsel, aplikasi lain untuk Tri &amp; Axis.</div></div>
+{% endfor %}
+</div>
+
+{# Modal tambah aplikasi #}
+<div class="modal fade" id="modalApp" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('appbalances.create') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-plus"></i> Tambah Aplikasi Provider</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="mb-2"><label class="form-label">Nama Aplikasi</label><input class="form-control" name="name" required placeholder="cth: Aplikasi A / DigiPulsa"></div>
+    <div class="mb-2"><label class="form-label">Melayani Operator</label><input class="form-control" name="serves" placeholder="cth: XL, Telkomsel, Indosat"></div>
+    <div class="mb-2"><label class="form-label">Batas Minimum (Rp)</label><input class="form-control" name="min_balance" placeholder="cth: {{ low_default }}"><div class="form-text">Kosongkan untuk memakai batas bawaan dari Pengaturan.</div></div>
+    <div class="mb-2"><label class="form-label">Saldo Awal Sekarang (Rp)</label><input class="form-control" name="saldo_awal" placeholder="cth: 250000"></div>
+    <div class="mb-2"><label class="form-label">Tanggal</label><input class="form-control" type="datetime-local" name="date"></div>
+  </div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan</button></div>
+  </form>
+</div></div></div>
+{% endblock %}

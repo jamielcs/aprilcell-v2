@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block content %}
+<div class="card p-4"><div class="text-center mb-2">{% if logo_file %}<img src="{{ url_for('static', filename='uploads/' ~ logo_file) }}" style="width:72px;height:72px;border-radius:16px;object-fit:cover">{% endif %}</div><h3>Login Catatan {{ shop_name }}</h3>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="mb-3"><label class="form-label">Username</label><input class="form-control" name="username" required></div>
+<div class="mb-3"><label class="form-label">Password</label><input type="password" class="form-control" name="password" required></div>
+<button class="btn btn-primary w-100">Login</button></form></div>{% endblock %}

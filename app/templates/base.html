@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="id" data-bs-theme="{{ ui_theme }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Catatan {{ shop_name }}{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/bootstrap/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='vendor/fontawesome/css/all.min.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>:root{--accent:{{ accent }};--blue:{{ accent }}}</style>
+<script>
+// Terapkan tema sedini mungkin (cookie > bawaan). Mode "system" ikut OS.
+(function(){try{
+  var def='{{ theme_default }}';
+  if(def==='system' && !document.cookie.match(/(?:^|; )theme=/)){
+    var t=(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';
+    document.documentElement.setAttribute('data-bs-theme',t);
+  }
+}catch(e){}})();
+</script>
+</head>
+<body>
+{% if current_user_id %}
+<div class="app-shell">
+  <aside class="sidebar d-none d-md-flex flex-column">
+    <div class="brand d-flex align-items-center gap-2">
+      {% if logo_file %}<img src="{{ url_for('static', filename='uploads/' ~ logo_file) }}" alt="Logo" class="brand-logo">{% else %}<span class="brand-badge"><i class="fa-solid fa-store"></i></span>{% endif %}
+      <span>Catatan <span>{{ shop_name }}</span></span>
+    </div>
+    <nav class="nav flex-column gap-1">
+      <div class="nav-group">Utama</div>
+      <a class="nav-link" href="{{ url_for('dashboard.index') }}"><i class="fa-solid fa-house me-2"></i>Dashboard</a>
+      <div class="nav-group">Jualan</div>
+      <a class="nav-link" href="{{ url_for('sales.index') }}"><i class="fa-solid fa-cart-shopping me-2"></i>Jual Produk</a>
+      <a class="nav-link" href="{{ url_for('services.index') }}"><i class="fa-solid fa-hand-holding-dollar me-2"></i>Catat Jasa</a>
+      <div class="nav-group">Kelola Toko</div>
+      <a class="nav-link" href="{{ url_for('products.index') }}"><i class="fa-solid fa-boxes-stacked me-2"></i>Produk &amp; Jasa</a>
+      <a class="nav-link" href="{{ url_for('appbalances.index') }}"><i class="fa-solid fa-mobile-screen-button me-2"></i>Saldo Aplikasi</a>
+      <a class="nav-link" href="{{ url_for('profit.index') }}"><i class="fa-solid fa-chart-line me-2"></i>Keuntungan</a>
+      <div class="nav-group">Keuangan</div>
+      <a class="nav-link" href="{{ url_for('accounts.index') }}"><i class="fa-solid fa-wallet me-2"></i>Rekening</a>
+      <a class="nav-link" href="{{ url_for('transactions.tambah') }}"><i class="fa-solid fa-money-bill-transfer me-2"></i>Transaksi Saldo</a>
+      <a class="nav-link" href="{{ url_for('transfers.index') }}"><i class="fa-solid fa-arrow-right-arrow-left me-2"></i>Transfer Antar-Rekening</a>
+      <a class="nav-link" href="{{ url_for('debts.index') }}"><i class="fa-solid fa-book me-2"></i>Buku Utang dan Piutang</a>
+      <a class="nav-link" href="{{ url_for('expenses.index') }}"><i class="fa-solid fa-receipt me-2"></i>Pengeluaran Harian</a>
+      <a class="nav-link" href="{{ url_for('uncollected.index') }}"><i class="fa-solid fa-hand-holding-dollar me-2"></i>Uang Masuk Belum Diambil</a>
+      <div class="nav-group">Lainnya</div>
+      <a class="nav-link" href="{{ url_for('reports.index') }}"><i class="fa-solid fa-chart-column me-2"></i>Laporan Keuangan</a>
+      <a class="nav-link" href="{{ url_for('transactions.index') }}"><i class="fa-solid fa-clock-rotate-left me-2"></i>Riwayat Transaksi</a>
+      <a class="nav-link" href="{{ url_for('backup.index') }}"><i class="fa-solid fa-database me-2"></i>Backup dan Restore</a>
+      <a class="nav-link" href="{{ url_for('settings.index') }}"><i class="fa-solid fa-gear me-2"></i>Pengaturan</a>
+      <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout ({{ current_username }})</a>
+    </nav>
+  </aside>
+  <main class="main-content">
+    <div class="topbar d-flex align-items-center gap-2 px-3 pt-3">
+      <span class="fw-bold d-md-none">{% if logo_file %}<img src="{{ url_for('static', filename='uploads/' ~ logo_file) }}" alt="Logo" class="brand-logo-sm"> {% endif %}{{ shop_name }}</span>
+      <span class="ms-auto"></span>
+      <button type="button" class="btn btn-outline-secondary btn-sm" id="themeToggle" title="Ganti terang / gelap"><i class="fa-solid fa-circle-half-stroke"></i></button>
+      <a class="btn btn-primary btn-sm" href="{{ url_for('sales.index') }}"><i class="fa-solid fa-plus"></i> Jual Produk</a>
+      <a class="btn btn-success btn-sm" href="{{ url_for('services.index') }}"><i class="fa-solid fa-plus"></i> Catat Jasa</a>
+    </div>
+{% else %}
+<main class="auth-main">
+{% endif %}
+    <div class="container-fluid py-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat if cat!='message' else 'info' }} alert-dismissible fade show" role="alert">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+      {% endfor %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+{% if current_user_id %}
+<nav class="bottom-nav d-md-none">
+  <a href="{{ url_for('dashboard.index') }}"><i class="fa-solid fa-house"></i>Beranda</a>
+  <a href="{{ url_for('sales.index') }}"><i class="fa-solid fa-cart-shopping"></i>Jual</a>
+  <a href="{{ url_for('services.index') }}"><i class="fa-solid fa-hand-holding-dollar"></i>Jasa</a>
+  <a href="{{ url_for('profit.index') }}"><i class="fa-solid fa-chart-line"></i>Untung</a>
+  <button type="button" data-bs-toggle="offcanvas" data-bs-target="#moreMenu"><i class="fa-solid fa-bars"></i>Lainnya</button>
+</nav>
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="moreMenu">
+  <div class="offcanvas-header"><h5>Menu Lainnya</h5><button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button></div>
+  <div class="offcanvas-body">
+    <div class="list-group">
+      <a class="list-group-item" href="{{ url_for('products.index') }}"><i class="fa-solid fa-boxes-stacked me-2"></i>Produk &amp; Jasa</a>
+      <a class="list-group-item" href="{{ url_for('appbalances.index') }}"><i class="fa-solid fa-mobile-screen-button me-2"></i>Saldo Aplikasi</a>
+      <a class="list-group-item" href="{{ url_for('accounts.index') }}"><i class="fa-solid fa-wallet me-2"></i>Rekening</a>
+      <a class="list-group-item" href="{{ url_for('transactions.tambah') }}"><i class="fa-solid fa-money-bill-transfer me-2"></i>Transaksi Saldo</a>
+      <a class="list-group-item" href="{{ url_for('transfers.index') }}"><i class="fa-solid fa-arrow-right-arrow-left me-2"></i>Transfer Antar-Rekening</a>
+      <a class="list-group-item" href="{{ url_for('debts.index') }}"><i class="fa-solid fa-book me-2"></i>Buku Utang dan Piutang</a>
+      <a class="list-group-item" href="{{ url_for('expenses.index') }}"><i class="fa-solid fa-receipt me-2"></i>Pengeluaran Harian</a>
+      <a class="list-group-item" href="{{ url_for('uncollected.index') }}"><i class="fa-solid fa-hand-holding-dollar me-2"></i>Uang Masuk Belum Diambil</a>
+      <a class="list-group-item" href="{{ url_for('reports.index') }}"><i class="fa-solid fa-chart-column me-2"></i>Laporan Keuangan</a>
+      <a class="list-group-item" href="{{ url_for('transactions.index') }}"><i class="fa-solid fa-clock-rotate-left me-2"></i>Riwayat Transaksi</a>
+      <a class="list-group-item" href="{{ url_for('backup.index') }}"><i class="fa-solid fa-database me-2"></i>Backup dan Restore</a>
+      <a class="list-group-item" href="{{ url_for('settings.index') }}"><i class="fa-solid fa-gear me-2"></i>Pengaturan</a>
+      <a class="list-group-item text-danger" href="{{ url_for('auth.logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Logout</a>
+    </div>
+  </div>
+</div>
+{% endif %}
+<!-- Generic confirm modal (NO alert/confirm/prompt) -->
+<div class="modal fade" id="confirmModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Konfirmasi</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+    <div class="modal-body" id="confirmModalBody">Yakin?</div>
+    <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button type="button" class="btn btn-danger" id="confirmModalBtn">Ya, Lanjutkan</button></div>
+  </div></div>
+</div>
+<script src="{{ url_for('static', filename='vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+<script>
+var tt = document.getElementById('themeToggle');
+if (tt) tt.addEventListener('click', function(){
+  var cur = document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-bs-theme', cur);
+  document.cookie = 'theme=' + cur + ';path=/;max-age=31536000';
+});
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

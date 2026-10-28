@@ -1,0 +1,81 @@
+{% extends 'base.html' %}{% block content %}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  <h4 class="mb-0"><i class="fa-solid fa-list"></i> Buku Mutasi — {{ a.name }}</h4>
+  <span class="chip">Saldo catatan: <b>{{ a.balance|rupiah }}</b></span>
+  {% if a.is_low %}<span class="chip red"><i class="fa-solid fa-triangle-exclamation"></i> Menipis (min {{ a.min_balance|rupiah }})</span>{% endif %}
+  <span class="ms-auto"></span>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#depositM"><i class="fa-solid fa-plus"></i> Tambah Saldo</button>
+  <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#koreksiM"><i class="fa-solid fa-pen"></i> Koreksi Saldo</button>
+  <a class="btn btn-outline-secondary" href="{{ url_for('appbalances.index') }}">Kembali</a>
+</div>
+
+<div class="card p-3 mb-3">
+  <h6><i class="fa-solid fa-scale-balanced"></i> Rekonsiliasi — cek saldo asli di aplikasi</h6>
+  <form method="get" class="row g-2 align-items-end">
+    <div class="col-md-4"><label class="form-label">Saldo asli di aplikasi {{ a.name }} (Rp)</label><input class="form-control" name="saldo_asli" value="{{ saldo_asli if saldo_asli is not none else '' }}" placeholder="cth: {{ a.balance }}"></div>
+    <div class="col-md-2"><button class="btn btn-outline-primary w-100">Cek Selisih</button></div>
+    {% if selisih is not none %}
+    <div class="col-md-6">
+      {% if selisih == 0 %}<div class="alert alert-success mb-0 py-2"><i class="fa-solid fa-circle-check"></i> Cocok! Selisih Rp 0.</div>
+      {% else %}<div class="alert alert-warning mb-0 py-2"><i class="fa-solid fa-triangle-exclamation"></i> Selisih <b>{{ selisih|rupiah }}</b> (catatan − asli). Kalau catatan yang salah, pakai tombol <b>Koreksi Saldo</b>.</div>{% endif %}
+    </div>
+    {% endif %}
+  </form>
+  <form method="get" class="row g-2 mt-2">
+    <div class="col-md-3"><select class="form-select" name="kind">
+      <option value="">Semua jenis mutasi</option>
+      {% for k, lbl in [('saldo_awal','Saldo awal'),('deposit','Tambah saldo / deposit'),('terpakai','Terpakai penjualan'),('koreksi','Penyesuaian / koreksi')] %}<option value="{{ k }}" {% if kind==k %}selected{% endif %}>{{ lbl }}</option>{% endfor %}
+    </select></div>
+    <div class="col-md-2"><button class="btn btn-outline-secondary w-100">Filter</button></div>
+  </form>
+</div>
+
+<div class="card p-3"><div class="table-wrap"><table class="table table-hover align-middle mb-0">
+  <thead><tr><th>Tanggal &amp; Jam</th><th>Jenis</th><th>Keterangan</th><th>Nominal</th><th>Saldo Sesudah</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for m in muts %}
+    <tr class="{% if m.status!='active' %}text-muted{% endif %}">
+      <td>{{ m.date.strftime('%d %b %Y %H:%M') }}</td>
+      <td>{% if m.kind=='deposit' %}<span class="chip green">Tambah saldo</span>{% elif m.kind=='terpakai' %}<span class="chip red">Terpakai penjualan</span>{% elif m.kind=='saldo_awal' %}<span class="chip">Saldo awal</span>{% else %}<span class="chip amber">Koreksi</span>{% endif %}
+        {% if m.mode=='manual' %}<span class="chip amber">manual</span>{% elif m.mode=='nyambung' %}<span class="chip">nyambung</span>{% endif %}</td>
+      <td>{{ m.description }}{% if m.source_account %}<br><small class="text-muted">dari {{ m.source_account.name }}</small>{% endif %}</td>
+      <td class="{% if m.signed_amount>=0 %}text-success{% else %}text-danger{% endif %} fw-bold">{{ '+' if m.signed_amount>0 }}{{ m.signed_amount|rupiah }}</td>
+      <td><b>{{ m.balance_after|rupiah }}</b></td>
+      <td>{% if m.status=='active' %}<span class="chip green">Aktif</span>{% else %}<span class="chip red">Dibatalkan</span>{% endif %}</td>
+      <td>{% if m.status=='active' and m.kind in ('deposit','saldo_awal','koreksi') and not m.is_reversal %}
+        <form method="post" action="{{ url_for('appbalances.cancel_mutation', mid=m.id) }}" data-confirm="Batalkan mutasi ini? Saldo akan dikembalikan via pembalikan."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" title="Batalkan"><i class="fa-solid fa-trash"></i></button></form>{% endif %}</td>
+    </tr>
+  {% else %}<tr><td colspan="7" class="text-center text-muted py-4">Belum ada mutasi.</td></tr>{% endfor %}
+  </tbody></table></div></div>
+
+{# Modal deposit (sama seperti index) #}
+<div class="modal fade" id="depositM" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('appbalances.deposit', aid=a.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-plus"></i> Tambah Saldo — {{ a.name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="mb-2"><label class="form-label">Nominal Deposit (Rp)</label><input class="form-control" name="amount" required placeholder="cth: 500000"></div>
+    <div class="mb-2"><label class="form-label">Cara Catat</label>
+      <div class="form-check"><input class="form-check-input" type="radio" name="mode" value="nyambung" id="nyd" checked><label class="form-check-label" for="nyd"><b>Nyambung</b> — potong otomatis dari rekening sumber</label></div>
+      <div class="form-check"><input class="form-check-input" type="radio" name="mode" value="manual" id="mnd"><label class="form-check-label" for="mnd"><b>Manual</b> — catat lepas, rekening tidak disentuh</label></div>
+    </div>
+    <div class="mb-2"><label class="form-label">Rekening Sumber (mode Nyambung)</label><select class="form-select" name="source_account_id">{% for ac in accounts %}<option value="{{ ac.id }}">{{ ac.name }} ({{ ac.balance|rupiah }})</option>{% endfor %}</select></div>
+    <div class="mb-2"><label class="form-label">Tanggal</label><input class="form-control" type="datetime-local" name="date"></div>
+    <div class="mb-2"><label class="form-label">Keterangan</label><input class="form-control" name="note" placeholder="cth: deposit mingguan"></div>
+  </div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Deposit</button></div>
+  </form>
+</div></div></div>
+
+{# Modal koreksi #}
+<div class="modal fade" id="koreksiM" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('appbalances.koreksi', aid=a.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-pen"></i> Koreksi Saldo — {{ a.name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="alert alert-info py-2">Saldo tercatat sekarang: <b>{{ a.balance|rupiah }}</b></div>
+    <div class="mb-2"><label class="form-label">Saldo Seharusnya (Rp)</label><input class="form-control" name="target" required placeholder="cth: {{ a.balance }}"></div>
+    <div class="mb-2"><label class="form-label">Alasan Koreksi (wajib)</label><input class="form-control" name="reason" required placeholder="cth: selisih setelah rekonsiliasi manual"></div>
+  </div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-warning"><i class="fa-solid fa-floppy-disk"></i> Simpan Koreksi</button></div>
+  </form>
+</div></div></div>
+{% endblock %}
