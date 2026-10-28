@@ -57,6 +57,14 @@ Mockup tampilan: `mockup-aprilcell-v2.html` (data contoh).
 29. Nama rekening BEBAS (user 2026-10-29 00:23): om sendiri yang menamai rekening/e-wallet-nya (cth: DANA Rudi, BRI Utama, Cash Laci, QRIS). Semua form tambah WAJIB punya placeholder contoh di tiap kolom (newbie friendly) — misal kolom nama rekening: "cth: DANA Rudi / BRI Utama / Cash Laci / QRIS".
 28. Semua dialog konfirmasi/notifikasi memakai modal modern sesuai tema aplikasi (aturan UI lama tetap berlaku).
 
+## J. Halaman Pengaturan (ditambah user 2026-10-29 00:32)
+31. Menu "Pengaturan" (grup Lainnya) jadi halaman setting lengkap:
+    - **Identitas Toko:** upload **logo toko** (tampil di sidebar, halaman login, kop laporan/struk cetak), nama toko, nama pemilik, no HP/WA, alamat, teks ucapan bawah struk/laporan.
+    - **Tampilan:** mode bawaan terang/gelap/ikut sistem, warna aksen tema (pilihan warna).
+    - **Aturan Usaha:** batas saldo menipis bawaan untuk semua aplikasi, peringatan saldo menipis on/off, backup otomatis on/off (tiap hari).
+    - **Akun Login:** username + ganti password.
+    Mockup halaman Pengaturan sudah ditambahkan & dipush ke repo aprilcell-v2 (`feb6bb2`).
+
 ## Status
 - Aplikasi v1 (tanpa rombakan ini) sudah jadi, ter-push ke repo jamielcs/catatan-keuangan dan ter-clone di PC user D:\Dev\catatan-keuangan — belum runtime-verified user di Windows.
 - Konsep v2 ini: 19 point + syarat tampilan SELESAI diputus semua. Menunggu instruksi gas untuk dibangun.
