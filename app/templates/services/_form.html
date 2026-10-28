@@ -1,0 +1,21 @@
+{# Form jasa (modal). Variabel opsional: svc untuk edit. #}
+{% set v = svc if svc is defined else None %}
+<div class="mb-2"><label class="form-label">Jenis Jasa</label>
+  <select class="form-select" name="product_id" required>
+    <option value="">— Pilih jasa —</option>
+    {% for p in products %}<option value="{{ p.id }}" {% if v and v.product_id==p.id %}selected{% endif %}>{{ p.display_name }}</option>{% endfor %}
+  </select></div>
+<div class="mb-2"><label class="form-label">Nominal Pokok (uang yang diteruskan, Rp)</label><input class="form-control" name="principal" value="{{ v.principal if v else '' }}" required placeholder="cth: 100000"></div>
+<div class="mb-2"><label class="form-label">Fee Admin — keuntungan om (ketik manual, Rp)</label><input class="form-control" name="fee" value="{{ v.fee if v else '' }}" required placeholder="cth: 2500"></div>
+<div class="row g-2">
+  <div class="col-6"><label class="form-label">Pelanggan Bayar Pakai</label>
+    <select class="form-select" name="payment_method">{% for key, lbl in payment_methods %}<option value="{{ key }}" {% if v and v.payment_method==key %}selected{% endif %}>{{ lbl }}</option>{% endfor %}</select></div>
+  <div class="col-6"><label class="form-label">Uang Masuk ke Rekening</label>
+    <select class="form-select" name="dest_account_id" required>{% for a in accounts %}<option value="{{ a.id }}" {% if v and v.dest_account_id==a.id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}</select></div>
+</div>
+<div class="mb-2 mt-2"><label class="form-label">Diteruskan dari Saldo</label>
+  <select class="form-select" name="source_account_id">{% for a in accounts %}<option value="{{ a.id }}" {% if v and v.source_account_id==a.id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}</select>
+  <div class="form-text">Saldo tempat pokok diambil untuk diteruskan ke pelanggan (mis. DANA Rudi untuk isi e-wallet, Cash untuk tarik tunai).</div></div>
+<div class="mb-2"><label class="form-label">Tanggal &amp; Jam</label><input class="form-control" type="datetime-local" name="date" value="{{ v.date.strftime('%Y-%m-%dT%H:%M') if v else now.strftime('%Y-%m-%dT%H:%M') }}"></div>
+<div class="mb-2"><label class="form-label">Catatan (opsional)</label><input class="form-control" name="note" value="{{ v.note if v else '' }}" placeholder="cth: nomor tujuan 08xx"></div>
+<div class="alert alert-info py-2 mb-0 small"><i class="fa-solid fa-circle-info"></i> Pokok itu <b>uang lewat</b> — masuk dari pelanggan lalu diteruskan. Yang tercatat sebagai untung hanya <b>fee</b>.</div>

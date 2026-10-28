@@ -1,0 +1,21 @@
+{# Form penjualan produk (modal). Variabel opsional: sale untuk edit. #}
+{% set v = sale if sale is defined else None %}
+<div class="mb-2"><label class="form-label">Produk</label>
+  <select class="form-select" name="product_id" required>
+    <option value="">— Pilih produk —</option>
+    {% for p in products %}<option value="{{ p.id }}" {% if v and v.product_id==p.id %}selected{% endif %}>{{ p.display_name }} — ecer {{ p.price_ecer|rupiah }}{% if p.use_stock %} · stok {{ p.stock_qty }}{% endif %}</option>{% endfor %}
+  </select></div>
+<div class="mb-2"><label class="form-label">Harga Untuk</label>
+  <select class="form-select" name="price_level">
+    {% for key, lbl in price_levels %}<option value="{{ key }}" {% if v and v.price_level==key %}selected{% endif %}>{{ lbl }}</option>{% endfor %}
+  </select></div>
+<div class="mb-2"><label class="form-label">Jumlah</label><input class="form-control" type="number" name="qty" min="1" value="{{ v.qty if v else 1 }}" required></div>
+<div class="row g-2">
+  <div class="col-6"><label class="form-label">Pembeli Bayar Pakai</label>
+    <select class="form-select" name="payment_method">{% for key, lbl in payment_methods %}<option value="{{ key }}" {% if v and v.payment_method==key %}selected{% endif %}>{{ lbl }}</option>{% endfor %}</select></div>
+  <div class="col-6"><label class="form-label">Uang Masuk ke Rekening</label>
+    <select class="form-select" name="dest_account_id" required>{% for a in accounts %}<option value="{{ a.id }}" {% if v and v.dest_account_id==a.id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}</select></div>
+</div>
+<div class="mb-2 mt-2"><label class="form-label">Tanggal &amp; Jam</label><input class="form-control" type="datetime-local" name="date" value="{{ v.date.strftime('%Y-%m-%dT%H:%M') if v else now.strftime('%Y-%m-%dT%H:%M') }}"></div>
+<div class="mb-2"><label class="form-label">Catatan (opsional)</label><input class="form-control" name="note" value="{{ v.note if v else '' }}" placeholder="cth: pembeli langganan"></div>
+<div class="alert alert-info py-2 mb-0 small"><i class="fa-solid fa-bolt"></i> Otomatis: saldo aplikasi produk ini berkurang senilai harga beli, dan untung (jual − beli) tercatat ke menu Keuntungan.</div>

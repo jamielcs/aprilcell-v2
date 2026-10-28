@@ -1,0 +1,31 @@
+{% extends 'base.html' %}{% block content %}
+<div class="d-flex align-items-center gap-2 mb-3">
+  <h4 class="mb-0"><i class="fa-solid fa-list"></i> Riwayat Stok — {{ p.display_name }}</h4>
+  <span class="ms-auto"></span>
+  <span class="chip">Stok sekarang: <b>{{ p.stock_qty }}</b></span>
+  <a class="btn btn-outline-secondary" href="{{ url_for('products.index') }}">Kembali</a>
+</div>
+<div class="card p-3 mb-3">
+  <h6>Koreksi Stok Manual</h6>
+  <form method="post" action="{{ url_for('products.stok_koreksi', pid=p.id) }}" class="row g-2">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="col-md-3"><input class="form-control" name="target" placeholder="Stok seharusnya… cth: 13" required></div>
+    <div class="col-md-6"><input class="form-control" name="reason" placeholder="Alasan koreksi (wajib)… cth: hitung ulang fisik" required></div>
+    <div class="col-md-3"><button class="btn btn-warning w-100">Koreksi Stok</button></div>
+  </form>
+</div>
+<div class="card p-3"><div class="table-wrap"><table class="table align-middle mb-0">
+  <thead><tr><th>Tanggal</th><th>Jenis</th><th>Jumlah</th><th>Stok Sesudah</th><th>Keterangan</th><th>Status</th></tr></thead>
+  <tbody>
+  {% for m in moves %}
+    <tr class="{% if m.status!='active' %}text-muted{% endif %}">
+      <td>{{ m.date.strftime('%d %b %Y %H:%M') }}</td>
+      <td>{{ {'awal':'Saldo awal','kulakan':'Kulakan','terjual':'Terjual','koreksi':'Koreksi'}.get(m.kind, m.kind) }}</td>
+      <td class="{% if m.qty_signed>=0 %}text-success{% else %}text-danger{% endif %} fw-bold">{{ '+' if m.qty_signed>0 }}{{ m.qty_signed }}</td>
+      <td><b>{{ m.stock_after }}</b></td>
+      <td>{{ m.description }}{% if m.total_cost %} · total {{ m.total_cost|rupiah }}{% endif %}</td>
+      <td>{% if m.status=='active' %}<span class="chip green">Aktif</span>{% else %}<span class="chip red">Dibatalkan</span>{% endif %}</td>
+    </tr>
+  {% else %}<tr><td colspan="6" class="text-center text-muted">Belum ada riwayat stok.</td></tr>{% endfor %}
+  </tbody></table></div></div>
+{% endblock %}

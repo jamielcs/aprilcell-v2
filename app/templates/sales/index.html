@@ -1,0 +1,62 @@
+{% extends 'base.html' %}{% block content %}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  <h4 class="mb-0"><i class="fa-solid fa-cart-shopping"></i> Jual Produk</h4>
+  <span class="chip">Total jual: <b>{{ total_jual|rupiah }}</b></span>
+  <span class="chip green">Untung: <b>{{ total_untung|rupiah }}</b></span>
+  <span class="ms-auto"></span>
+  <form method="get" class="d-flex gap-2">
+    <input class="form-control" type="date" name="tanggal" value="{{ tanggal }}">
+    <button class="btn btn-outline-primary">Lihat</button>
+  </form>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalJual"><i class="fa-solid fa-plus"></i> Tambah Penjualan</button>
+</div>
+
+<div class="card p-3"><div class="table-wrap"><table class="table table-hover align-middle mb-0">
+  <thead><tr><th>Tanggal &amp; Jam</th><th>Produk</th><th>Level</th><th>Jml</th><th>Harga</th><th>Total</th><th>Bayar Pakai</th><th>Masuk ke Rekening</th><th>Saldo Aplikasi Terpotong</th><th>Stok</th><th>Untung</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for s in items %}
+    <tr class="{% if s.status!='active' %}text-muted text-decoration-line-through{% endif %}">
+      <td>{{ s.date.strftime('%d %b %Y %H:%M') }}</td>
+      <td><b>{{ s.product.display_name }}</b>{% if s.note %}<br><small class="text-muted text-decoration-none">{{ s.note }}</small>{% endif %}</td>
+      <td>{{ {'ecer':'Ecer','grosir1':'Grosir 1','grosir2':'Grosir 2'}.get(s.price_level, s.price_level) }}</td>
+      <td>{{ s.qty }}</td>
+      <td>{{ s.unit_sell|rupiah }}</td>
+      <td><b>{{ s.total|rupiah }}</b></td>
+      <td>{{ dict(payment_methods).get(s.payment_method, s.payment_method) }}</td>
+      <td>{{ s.dest_account.name if s.dest_account else '-' }}</td>
+      <td>{% if s.app_mutation %}{{ s.app_mutation.app.name }} −{{ (s.unit_buy * s.qty)|rupiah }}{% else %}—{% endif %}</td>
+      <td>{% if s.product.use_stock %}−{{ s.qty }} pcs{% else %}—{% endif %}</td>
+      <td class="text-success fw-bold">{{ s.profit|rupiah }}</td>
+      <td>{% if s.status=='active' %}<span class="chip green">Aktif</span>{% else %}<span class="chip red">Batal</span>{% endif %}</td>
+      <td class="text-nowrap">
+        {% if s.status=='active' %}
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editJual{{ s.id }}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+        <form method="post" action="{{ url_for('sales.cancel', sid=s.id) }}" class="d-inline" data-confirm="Batalkan penjualan ini? Uang, saldo aplikasi, dan stok akan dibalik seperti semula."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" title="Batalkan"><i class="fa-solid fa-trash"></i></button></form>
+        {% endif %}
+      </td>
+    </tr>
+  {% else %}<tr><td colspan="13" class="text-center text-muted py-4">Belum ada penjualan pada tanggal ini. Klik <b>Tambah Penjualan</b> untuk mencatat.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="small text-muted mt-2">Satu tabel lengkap — semua detail kelihatan. Tambah &amp; edit lewat modal; salah input tinggal edit, saldo &amp; untung dibenerin otomatis oleh sistem.</div>
+</div>
+
+{# ===== Modal Tambah Penjualan ===== #}
+<div class="modal fade" id="modalJual" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('sales.create') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-cart-shopping"></i> Tambah Penjualan Produk</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">{% with sale=None %}{% include 'sales/_form.html' %}{% endwith %}</div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Penjualan</button></div>
+  </form>
+</div></div></div>
+
+{# ===== Modal Edit per penjualan ===== #}
+{% for s in items %}{% if s.status=='active' %}
+<div class="modal fade" id="editJual{{ s.id }}" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('sales.edit', sid=s.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-pen"></i> Edit Penjualan</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">{% with sale=s %}{% include 'sales/_form.html' %}{% endwith %}</div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button></div>
+  </form>
+</div></div></div>
+{% endif %}{% endfor %}
+{% endblock %}

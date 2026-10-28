@@ -1,0 +1,38 @@
+{% extends 'base.html' %}{% block content %}<h4>Pengaturan</h4>
+<div class="card p-3 mb-3"><h6>Info Aplikasi</h6><p>Catatan APRILcell — aplikasi keuangan pribadi lokal. User: <b>{{ user.username if user else '' }}</b><br>Database: <code>instance/catatan_aprilcell.db</code> (SQLite lokal, permanen).<br>Zona waktu laporan: Asia/Jakarta.</p>
+<h6>Pemulihan Akun Lokal (tanpa membocorkan password lama)</h6><ol><li>Tutup aplikasi.</li><li>Backup folder <code>instance/</code> terlebih dahulu.</li><li>Hubungi administrator / jalankan prosedur reset lokal terdokumentasi di README — password lama tersimpan sebagai hash dan tidak bisa dibaca kembali, hanya bisa diganti lewat prosedur reset offline di komputer sendiri.</li></ol></div>
+<div class="card p-3 mb-3"><h6>Ganti Password</h6><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="change_password">
+<div class="mb-2"><label class="form-label">Password Saat Ini</label><input type="password" class="form-control" name="current_password" required></div>
+<div class="mb-2"><label class="form-label">Password Baru (min 6)</label><input type="password" class="form-control" name="new_password" required></div>
+<div class="mb-2"><label class="form-label">Konfirmasi Password Baru</label><input type="password" class="form-control" name="confirm_password" required></div>
+<button class="btn btn-primary">Ganti Password</button></form></div>
+<div class="card p-3 mb-3"><h6>Kategori Pengeluaran</h6><form method="post" action="{{ url_for('settings.create_category') }}" class="d-flex gap-2 mb-3"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input class="form-control" name="name" placeholder="Kategori baru" required><button class="btn btn-outline-primary">Tambah</button></form>
+{% for c in categories %}<div class="d-flex justify-content-between align-items-center border-bottom py-2"><span>{{ c.name }} {% if not c.is_active %}<small class="text-muted">(nonaktif)</small>{% endif %}</span><span class="d-flex gap-1">
+<form method="post" action="{{ url_for('settings.edit_category', cid=c.id) }}" class="d-flex gap-1"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input class="form-control form-control-sm" name="name" value="{{ c.name }}"><button class="btn btn-sm btn-outline-secondary">Edit</button></form>
+{% if c.is_active %}<form method="post" action="{{ url_for('settings.deactivate_category', cid=c.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger">Nonaktifkan</button></form>{% else %}<form method="post" action="{{ url_for('settings.activate_category', cid=c.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-success">Aktifkan</button></form>{% endif %}</span></div>{% endfor %}
+<div class="mt-3 small">Orang terdaftar: {% for p in people %}{{ p.name }} · {% endfor %} (kelola lengkap di Buku Utang dan Piutang)</div></div>
+<div class="card p-3 mb-3"><h6><i class="fa-solid fa-store"></i> Identitas Toko</h6>
+<form method="post" action="{{ url_for('settings.toko') }}" enctype="multipart/form-data"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<div class="d-flex gap-3 align-items-center mb-3">{% if logo_file %}<img src="{{ url_for('static', filename='uploads/' ~ logo_file) }}" style="width:72px;height:72px;border-radius:16px;object-fit:cover">{% else %}<span class="brand-badge" style="width:72px;height:72px;font-size:1.8rem"><i class="fa-solid fa-store"></i></span>{% endif %}
+<div class="flex-grow-1"><label class="form-label">Logo Toko</label><input type="file" class="form-control" name="logo" accept=".png,.jpg,.jpeg,.webp,.svg"><div class="form-text">Tampil di sidebar, halaman login, dan kop laporan cetak.</div>{% if logo_file %}<label class="form-check mt-1"><input type="checkbox" class="form-check-input" name="hapus_logo" value="1"> Hapus logo</label>{% endif %}</div></div>
+<div class="row g-2">
+<div class="col-md-6"><label class="form-label">Nama Toko</label><input class="form-control" name="shop_name" value="{{ shop_name }}" placeholder="cth: APRILcell"></div>
+<div class="col-md-6"><label class="form-label">Nama Pemilik</label><input class="form-control" name="shop_owner" value="{{ shop_owner }}" placeholder="cth: Roichatul"></div>
+<div class="col-md-6"><label class="form-label">No. HP / WA Toko</label><input class="form-control" name="shop_phone" value="{{ shop_phone }}" placeholder="cth: 08xx-xxxx-xxxx"></div>
+<div class="col-md-6"><label class="form-label">Alamat Toko</label><input class="form-control" name="shop_address" value="{{ shop_address }}" placeholder="cth: Jl. Raya No. 123"></div>
+<div class="col-12"><label class="form-label">Teks Bawah Struk / Laporan</label><input class="form-control" name="receipt_footer" value="{{ receipt_footer }}" placeholder="cth: Terima kasih sudah berbelanja"></div>
+</div><button class="btn btn-primary mt-3">Simpan Identitas Toko</button></form></div>
+<div class="row g-3 mb-3">
+<div class="col-md-6"><div class="card p-3 h-100"><h6><i class="fa-solid fa-palette"></i> Tampilan</h6>
+<form method="post" action="{{ url_for('settings.tampilan') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label class="form-label">Mode Bawaan</label><select class="form-select mb-2" name="theme_default"><option value="light" {% if theme_default=='light' %}selected{% endif %}>Terang</option><option value="dark" {% if theme_default=='dark' %}selected{% endif %}>Gelap</option><option value="system" {% if theme_default=='system' %}selected{% endif %}>Ikut Sistem</option></select>
+<label class="form-label">Warna Aksen</label><div class="d-flex gap-2 mb-2">{% for c in ['#2563eb','#f97316','#198754','#7c3aed','#dc3545'] %}<label><input type="radio" name="accent" value="{{ c }}" class="d-none accent-radio" {% if accent==c %}checked{% endif %}><span class="accent-dot {% if accent==c %}sel{% endif %}" style="background:{{ c }}"></span></label>{% endfor %}</div>
+<button class="btn btn-primary">Simpan Tampilan</button></form></div></div>
+<div class="col-md-6"><div class="card p-3 h-100"><h6><i class="fa-solid fa-sliders"></i> Aturan Usaha</h6>
+<form method="post" action="{{ url_for('settings.usaha') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label class="form-label">Batas Saldo Menipis Bawaan (Rp)</label><input class="form-control mb-2" name="low_balance_default" value="{{ low_balance_default }}" placeholder="cth: 50000">
+<div class="form-check form-switch mb-2"><input class="form-check-input" type="checkbox" name="low_warning" value="1" id="lw" {% if low_warning=='1' %}checked{% endif %}><label class="form-check-label" for="lw">Peringatan saldo menipis di Dashboard</label></div>
+<div class="form-check form-switch mb-3"><input class="form-check-input" type="checkbox" name="auto_backup" value="1" id="ab" {% if auto_backup=='1' %}checked{% endif %}><label class="form-check-label" for="ab">Backup otomatis harian (pengingat di menu Backup)</label></div>
+<button class="btn btn-primary">Simpan Aturan Usaha</button></form></div></div>
+</div>
+<div class="card p-3"><h6>Audit Log</h6>{% for l in logs %}<div class="tx-card"><small>{{ l.created_at }} · <b>{{ l.action }}</b> · {{ l.details }}</small></div>{% else %}<p>Belum ada audit log.</p>{% endfor %}</div>{% endblock %}

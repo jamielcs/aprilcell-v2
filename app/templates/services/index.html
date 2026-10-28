@@ -1,0 +1,57 @@
+{% extends 'base.html' %}{% block content %}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  <h4 class="mb-0"><i class="fa-solid fa-hand-holding-dollar"></i> Catat Jasa</h4>
+  <span class="chip">Pokok (uang lewat): <b>{{ total_pokok|rupiah }}</b></span>
+  <span class="chip green">Fee / Untung: <b>{{ total_fee|rupiah }}</b></span>
+  <span class="ms-auto"></span>
+  <form method="get" class="d-flex gap-2">
+    <input class="form-control" type="date" name="tanggal" value="{{ tanggal }}">
+    <button class="btn btn-outline-success">Lihat</button>
+  </form>
+  <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modalJasa"><i class="fa-solid fa-plus"></i> Tambah Jasa</button>
+</div>
+
+<div class="card p-3"><div class="table-wrap"><table class="table table-hover align-middle mb-0">
+  <thead><tr><th>Tanggal &amp; Jam</th><th>Jenis Jasa</th><th>Nominal Pokok</th><th>Fee (Untung)</th><th>Total Diterima</th><th>Bayar Pakai</th><th>Masuk ke Rekening</th><th>Diteruskan dari Saldo</th><th>Status</th><th></th></tr></thead>
+  <tbody>
+  {% for s in items %}
+    <tr class="{% if s.status!='active' %}text-muted text-decoration-line-through{% endif %}">
+      <td>{{ s.date.strftime('%d %b %Y %H:%M') }}</td>
+      <td><b>{{ s.product.display_name }}</b>{% if s.note %}<br><small class="text-muted">{{ s.note }}</small>{% endif %}</td>
+      <td>{{ s.principal|rupiah }}</td>
+      <td class="text-success fw-bold">{{ s.fee|rupiah }}</td>
+      <td><b>{{ s.total_received|rupiah }}</b></td>
+      <td>{{ dict(payment_methods).get(s.payment_method, s.payment_method) }}</td>
+      <td>{{ s.dest_account.name if s.dest_account else '-' }}</td>
+      <td>{{ s.source_account.name if s.source_account else '-' }}</td>
+      <td>{% if s.status=='active' %}<span class="chip green">Aktif</span>{% else %}<span class="chip red">Batal</span>{% endif %}</td>
+      <td class="text-nowrap">
+        {% if s.status=='active' %}
+        <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editJasa{{ s.id }}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+        <form method="post" action="{{ url_for('services.cancel', sid=s.id) }}" class="d-inline" data-confirm="Batalkan catatan jasa ini? Semua efek saldonya akan dibalik."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" title="Batalkan"><i class="fa-solid fa-trash"></i></button></form>
+        {% endif %}
+      </td>
+    </tr>
+  {% else %}<tr><td colspan="10" class="text-center text-muted py-4">Belum ada jasa pada tanggal ini. Klik <b>Tambah Jasa</b> untuk mencatat.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="small text-muted mt-2">Pokok = uang lewat (bukan keuntungan). Yang dihitung untung hanya kolom <b>Fee</b>.</div>
+</div>
+
+<div class="modal fade" id="modalJasa" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('services.create') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-hand-holding-dollar"></i> Tambah Jasa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">{% with svc=None %}{% include 'services/_form.html' %}{% endwith %}</div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Simpan Jasa</button></div>
+  </form>
+</div></div></div>
+
+{% for s in items %}{% if s.status=='active' %}
+<div class="modal fade" id="editJasa{{ s.id }}" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('services.edit', sid=s.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-pen"></i> Edit Jasa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">{% with svc=s %}{% include 'services/_form.html' %}{% endwith %}</div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button></div>
+  </form>
+</div></div></div>
+{% endif %}{% endfor %}
+{% endblock %}

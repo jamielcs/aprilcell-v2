@@ -1,0 +1,92 @@
+{% extends 'base.html' %}{% block content %}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+  <h4 class="mb-0"><i class="fa-solid fa-boxes-stacked"></i> Produk &amp; Jasa</h4>
+  <span class="ms-auto"></span>
+  <form method="get" class="d-flex gap-2">
+    <input class="form-control" name="q" value="{{ q }}" placeholder="Cari produk… cth: pulsa XL">
+    <select class="form-select" name="kind" style="max-width:150px">
+      <option value="">Semua</option>
+      <option value="produk" {% if kind=='produk' %}selected{% endif %}>Produk</option>
+      <option value="jasa" {% if kind=='jasa' %}selected{% endif %}>Jasa</option>
+    </select>
+    <button class="btn btn-outline-primary">Cari</button>
+  </form>
+  <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah"><i class="fa-solid fa-plus"></i> Tambah</button>
+</div>
+
+<div class="card p-3">
+  <div class="table-wrap"><table class="table table-hover align-middle mb-0">
+    <thead><tr><th>Nama</th><th>Jenis</th><th>Kategori/Operator</th><th>Modal</th><th>Ecer</th><th>Grosir 1</th><th>Grosir 2</th><th>Untung Ecer</th><th>Aplikasi / Stok</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+    {% for p in items %}
+      <tr class="{% if not p.is_active %}table-secondary text-muted{% endif %}">
+        <td><b>{{ p.display_name }}</b>{% if p.note %}<br><small class="text-muted">{{ p.note }}</small>{% endif %}</td>
+        <td>{% if p.kind=='jasa' %}<span class="chip amber">Jasa</span>{% else %}<span class="chip">Produk</span>{% endif %}</td>
+        <td>{{ p.category or '-' }}</td>
+        {% if p.kind=='jasa' %}
+        <td colspan="5" class="text-muted">Fee diketik manual tiap transaksi</td>
+        {% else %}
+        <td>{{ p.buy_price|rupiah }}</td><td>{{ p.price_ecer|rupiah }}</td><td>{{ p.price_grosir1|rupiah }}</td><td>{{ p.price_grosir2|rupiah }}</td>
+        <td class="text-success fw-bold">{{ (p.price_ecer - p.buy_price)|rupiah }}</td>
+        {% endif %}
+        <td>
+          {% if p.provider_app %}<span class="chip"><i class="fa-solid fa-mobile-screen-button"></i> {{ p.provider_app.name }}</span>{% endif %}
+          {% if p.use_stock %}<span class="chip {% if p.stock_min and p.stock_qty <= p.stock_min %}amber{% endif %}"><i class="fa-solid fa-boxes-stacked"></i> Stok {{ p.stock_qty }}{% if p.stock_min and p.stock_qty <= p.stock_min %} · mau habis{% endif %}</span>{% endif %}
+          {% if not p.provider_app and not p.use_stock %}<span class="text-muted">—</span>{% endif %}
+        </td>
+        <td>{% if p.is_active %}<span class="chip green">Aktif</span>{% else %}<span class="chip red">Nonaktif</span>{% endif %}</td>
+        <td class="text-nowrap">
+          <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#edit{{ p.id }}" title="Edit"><i class="fa-solid fa-pen"></i></button>
+          {% if p.use_stock %}
+          <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#kulakan{{ p.id }}" title="Kulakan / tambah stok"><i class="fa-solid fa-box-arrow-in-down"></i></button>
+          <a class="btn btn-sm btn-outline-info" href="{{ url_for('products.stok', pid=p.id) }}" title="Riwayat stok"><i class="fa-solid fa-list"></i></a>
+          {% endif %}
+          <form method="post" action="{{ url_for('products.toggle', pid=p.id) }}" class="d-inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-warning" title="Aktif/Nonaktif"><i class="fa-solid fa-power-off"></i></button></form>
+          <form method="post" action="{{ url_for('products.delete', pid=p.id) }}" class="d-inline" data-confirm="Hapus {{ p.display_name }} dari master? Yang sudah dipakai transaksi tidak bisa dihapus."><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="btn btn-sm btn-outline-danger" title="Hapus"><i class="fa-solid fa-trash"></i></button></form>
+        </td>
+      </tr>
+    {% else %}
+      <tr><td colspan="11" class="text-center text-muted py-4">Belum ada data. Klik <b>Tambah</b> untuk mengisi master produk &amp; jasa.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table></div>
+  <div class="small text-muted mt-2">Satu daftar untuk produk + jasa (flat). Stok hanya muncul untuk barang fisik yang saklar "Pakai Stok"-nya nyala; stok pulsa = saldo aplikasi.</div>
+</div>
+
+{# ===== Modal Tambah ===== #}
+<div class="modal fade" id="modalTambah" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <form method="post" action="{{ url_for('products.create') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-plus"></i> Tambah Produk / Jasa</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    {% include 'products/_form_fields.html' %}
+    <div class="mb-2"><label class="form-label">Stok Awal (khusus bila Pakai Stok)</label><input class="form-control" name="stock_awal" placeholder="cth: 20"></div>
+  </div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan</button></div>
+  </form>
+</div></div></div>
+
+{# ===== Modal Edit + Kulakan per produk ===== #}
+{% for p in items %}
+<div class="modal fade" id="edit{{ p.id }}" tabindex="-1"><div class="modal-dialog modal-lg"><div class="modal-content">
+  <form method="post" action="{{ url_for('products.edit', pid=p.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-pen"></i> Edit {{ p.display_name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">{% with prod=p %}{% include 'products/_form_fields.html' %}{% endwith %}</div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan</button></div>
+  </form>
+</div></div></div>
+{% if p.use_stock %}
+<div class="modal fade" id="kulakan{{ p.id }}" tabindex="-1"><div class="modal-dialog"><div class="modal-content">
+  <form method="post" action="{{ url_for('products.kulakan', pid=p.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="modal-header"><h5 class="modal-title"><i class="fa-solid fa-box-arrow-in-down"></i> Kulakan — {{ p.display_name }}</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+  <div class="modal-body">
+    <div class="mb-2"><label class="form-label">Jumlah Masuk</label><input class="form-control" name="qty" type="number" min="1" required placeholder="cth: 10"></div>
+    <div class="mb-2"><label class="form-label">Harga Beli per Pcs (Rp)</label><input class="form-control" name="unit_cost" value="{{ p.buy_price }}" placeholder="cth: 17000"><div class="form-text">Harga beli di master ikut diperbarui ke angka ini.</div></div>
+    <div class="mb-2"><label class="form-label">Bayar Dari Rekening (boleh dikosongkan)</label><select class="form-select" name="account_id"><option value="">— Tidak dicatat sebagai pembayaran —</option>{% for a in accounts %}<option value="{{ a.id }}">{{ a.name }} ({{ a.balance|rupiah }})</option>{% endfor %}</select></div>
+    <div class="mb-2"><label class="form-label">Tanggal</label><input class="form-control" name="date" type="date"></div>
+  </div>
+  <div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button><button class="btn btn-success"><i class="fa-solid fa-floppy-disk"></i> Simpan Kulakan</button></div>
+  </form>
+</div></div></div>
+{% endif %}
+{% endfor %}
+{% endblock %}

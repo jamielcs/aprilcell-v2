@@ -1,0 +1,28 @@
+{# Field form master produk/jasa. Variabel opsional: prod (untuk edit). #}
+{% set v = prod if prod is defined else None %}
+<div class="row g-2">
+  <div class="col-md-8"><label class="form-label">Nama</label><input class="form-control" name="name" required value="{{ v.name if v else '' }}" placeholder="cth: Pulsa XL / Kabel Data USB-C / Isi E-Wallet DANA"></div>
+  <div class="col-md-4"><label class="form-label">Jenis</label><select class="form-select" name="kind">
+    <option value="produk" {% if v and v.kind=='produk' %}selected{% endif %}>Produk</option>
+    <option value="jasa" {% if v and v.kind=='jasa' %}selected{% endif %}>Jasa</option></select></div>
+  <div class="col-md-6"><label class="form-label">Kategori / Operator</label><input class="form-control" name="category" value="{{ v.category if v else '' }}" placeholder="cth: XL / Telkomsel / Aksesoris / DANA"></div>
+  <div class="col-md-6"><label class="form-label">Nominal / Varian</label><input class="form-control" name="nominal_label" value="{{ v.nominal_label if v else '' }}" placeholder="cth: 10.000 / 25.000 / 1 meter"></div>
+</div>
+<div class="row g-2 mt-1">
+  <div class="col-6 col-md-3"><label class="form-label">Harga Beli / Modal (Rp)</label><input class="form-control" name="buy_price" value="{{ v.buy_price if v else '' }}" placeholder="cth: 9800"></div>
+  <div class="col-6 col-md-3"><label class="form-label">Harga Ecer (Rp)</label><input class="form-control" name="price_ecer" value="{{ v.price_ecer if v else '' }}" placeholder="cth: 12000"></div>
+  <div class="col-6 col-md-3"><label class="form-label">Harga Grosir 1 (Rp)</label><input class="form-control" name="price_grosir1" value="{{ v.price_grosir1 if v else '' }}" placeholder="cth: 11500"></div>
+  <div class="col-6 col-md-3"><label class="form-label">Harga Grosir 2 (Rp)</label><input class="form-control" name="price_grosir2" value="{{ v.price_grosir2 if v else '' }}" placeholder="cth: 11000"></div>
+</div>
+<div class="form-text mb-2">Untuk <b>jasa</b>, kolom harga boleh dikosongkan — fee diisi manual saat pencatatan jasa.</div>
+<div class="row g-2">
+  <div class="col-md-6"><label class="form-label">Aplikasi Pengisi (saldo terpotong otomatis)</label>
+    <select class="form-select" name="provider_app_id"><option value="">— Tidak terhubung aplikasi —</option>
+    {% for a in apps %}<option value="{{ a.id }}" {% if v and v.provider_app_id==a.id %}selected{% endif %}>{{ a.name }}</option>{% endfor %}</select>
+    <div class="form-text">Isi untuk produk digital (pulsa/paket data) yang saldonya dipotong dari aplikasi provider.</div></div>
+  <div class="col-md-6">
+    <div class="form-check form-switch mt-4"><input class="form-check-input" type="checkbox" name="use_stock" value="1" id="us{{ v.id if v else 'new' }}" {% if v and v.use_stock %}checked{% endif %}><label class="form-check-label" for="us{{ v.id if v else 'new' }}">Pakai Stok (barang fisik / aksesoris)</label></div>
+    <label class="form-label mt-2">Peringatan Stok di Bawah / Sama Dengan</label><input class="form-control" name="stock_min" value="{{ v.stock_min if v else '' }}" placeholder="cth: 5">
+  </div>
+</div>
+<div class="mt-2"><label class="form-label">Catatan (opsional)</label><input class="form-control" name="note" value="{{ v.note if v else '' }}" placeholder="cth: harga bisa berubah sewaktu-waktu"></div>

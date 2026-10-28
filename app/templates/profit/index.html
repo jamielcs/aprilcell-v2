@@ -1,0 +1,70 @@
+{% extends 'base.html' %}{% block content %}
+<h4 class="mb-3"><i class="fa-solid fa-chart-line"></i> Keuntungan</h4>
+
+<div class="card p-3 mb-3 text-white" style="background:linear-gradient(135deg,var(--accent),#1e40af)">
+  <div class="small">Total Untung — {{ start.strftime('%d %b %Y') }} s/d {{ end.strftime('%d %b %Y') }}</div>
+  <div class="fs-2 fw-bold">{{ total|rupiah }}</div>
+  <div class="small">dari {{ n_tx }} transaksi · pokok jasa TIDAK ikut dihitung</div>
+</div>
+
+<div class="btn-group mb-3 flex-wrap" role="group">
+  <a class="btn btn-{% if mode=='hari' %}primary{% else %}outline-primary{% endif %}" href="{{ url_for('profit.index', periode='hari') }}">Hari Ini</a>
+  <a class="btn btn-{% if mode=='minggu' %}primary{% else %}outline-primary{% endif %}" href="{{ url_for('profit.index', periode='minggu') }}">Minggu Ini</a>
+  <a class="btn btn-{% if mode=='bulan' %}primary{% else %}outline-primary{% endif %}" href="{{ url_for('profit.index', periode='bulan') }}">Bulan Ini</a>
+</div>
+<form method="get" class="d-inline-flex gap-2 align-items-center mb-3 ms-md-2">
+  <input type="hidden" name="periode" value="custom">
+  <input class="form-control" type="date" name="dari" value="{{ dari }}">
+  <span>s/d</span>
+  <input class="form-control" type="date" name="sampai" value="{{ sampai }}">
+  <button class="btn btn-outline-primary">Pilih Tanggal</button>
+</form>
+
+<div class="row g-3 mb-3">
+  <div class="col-md-6"><div class="card p-3 h-100">
+    <h6><i class="fa-solid fa-cart-shopping"></i> Dari Jualan Produk</h6>
+    <div class="fs-4 fw-bold">{{ p_prod|rupiah }}</div>
+    <div class="small text-muted">{{ n_prod }} transaksi</div>
+    <hr>
+    <h6><i class="fa-solid fa-hand-holding-dollar"></i> Dari Jasa (fee admin)</h6>
+    <div class="fs-4 fw-bold">{{ p_jasa|rupiah }}</div>
+    <div class="small text-muted">{{ n_jasa }} transaksi</div>
+    <div class="progress mt-3" style="height:16px">
+      <div class="progress-bar" style="width:{{ pct_prod }}%;background:var(--accent)">Produk {{ pct_prod }}%</div>
+      <div class="progress-bar bg-warning text-dark" style="width:{{ pct_jasa }}%">Jasa {{ pct_jasa }}%</div>
+    </div>
+  </div></div>
+  <div class="col-md-6"><div class="card p-3 h-100">
+    <h6><i class="fa-solid fa-chart-column"></i> Untung 7 Hari Terakhir</h6>
+    <canvas id="profitChart" height="180"></canvas>
+  </div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-md-6"><div class="card p-3">
+    <h6><i class="fa-solid fa-receipt"></i> Yang Bikin Untung (terbaru)</h6>
+    {% for c in contrib %}
+    <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+      <div><a href="{{ c.url }}">{{ c.label }}</a><br><small class="text-muted">{{ c.date.strftime('%d %b %Y %H:%M') }} · {{ c.kind }}</small></div>
+      <div class="money text-success">+{{ c.amount|rupiah }}</div>
+    </div>
+    {% else %}<p class="text-muted mb-0">Belum ada keuntungan pada periode ini.</p>{% endfor %}
+  </div></div>
+  <div class="col-md-6"><div class="card p-3">
+    <h6><i class="fa-solid fa-trophy"></i> Paling Nguntungin Periode Ini</h6>
+    {% for name, amt in top5 %}
+    <div class="d-flex justify-content-between border-bottom py-2"><span>{{ loop.index }}. {{ name }}</span><b>{{ amt|rupiah }}</b></div>
+    {% else %}<p class="text-muted mb-0">Belum ada data.</p>{% endfor %}
+  </div></div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='vendor/chartjs/chart.umd.min.js') }}"></script>
+<script>
+new Chart(document.getElementById('profitChart'), {
+  type: 'bar',
+  data: { labels: {{ labels|tojson }}, datasets: [{ label: 'Untung (Rp)', data: {{ values|tojson }}, backgroundColor: '{{ accent }}', borderRadius: 6 }] },
+  options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+});
+</script>
+{% endblock %}
