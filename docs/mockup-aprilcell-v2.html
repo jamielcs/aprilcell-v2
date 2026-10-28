@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mockup Catatan APRILcell v2 — CONTOH TAMPILAN (data contoh)</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+<style>
+:root{
+  --bg:#f4f6f9; --card:#ffffff; --ink:#1a2332; --muted:#6b7280; --line:#e5e7eb;
+  --brand:#2563eb; --brand2:#7db8ff; --green:#198754; --red:#dc3545; --amber:#f59e0b;
+  --side:#141c2b; --side-ink:#c7d2e4; --chip:#eef2ff; --shadow:0 6px 24px rgba(16,24,40,.08);
+}
+[data-theme="dark"]{
+  --bg:#0e1420; --card:#182233; --ink:#e8eef7; --muted:#93a3bb; --line:#263449;
+  --chip:#1f2c44; --shadow:0 6px 24px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box} html,body{margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);transition:background .25s,color .25s}
+a{color:inherit;text-decoration:none}
+.app{display:flex;min-height:100vh}
+/* ===== Sidebar ===== */
+.sidebar{width:248px;background:var(--side);color:var(--side-ink);position:fixed;top:0;bottom:0;left:0;padding:18px 12px;overflow-y:auto;z-index:30}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 16px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:12px}
+.brand .logo{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,#2563eb,#7db8ff);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px}
+.brand b{color:#fff;font-size:16px;display:block;line-height:1.1}
+.brand small{font-size:11px;color:#8fa3c4}
+.nav-group{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:#7e90ad;margin:16px 10px 6px}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 10px;border-radius:10px;font-size:14px;cursor:pointer;margin:2px 0;color:var(--side-ink)}
+.nav-item i{width:18px;text-align:center;font-size:15px}
+.nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+.nav-item.active{background:linear-gradient(90deg,#2563eb,#1d4ed8);color:#fff;box-shadow:0 4px 14px rgba(37,99,235,.4)}
+.nav-item .tag{margin-left:auto;background:#f59e0b;color:#1a2332;font-size:9.5px;font-weight:700;border-radius:20px;padding:1px 7px}
+.nav-item .dot{margin-left:auto;width:8px;height:8px;border-radius:50%;background:var(--red)}
+/* ===== Main ===== */
+.main{flex:1;margin-left:248px;padding:22px 26px 90px;max-width:100%}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.topbar h1{font-size:21px;margin:0}
+.topbar .date{color:var(--muted);font-size:13px}
+.spacer{flex:1}
+.btn{border:0;border-radius:11px;padding:9px 15px;font-size:13.5px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn-brand{background:var(--brand);color:#fff}.btn-green{background:var(--green);color:#fff}
+.btn-ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.icon-btn{width:38px;height:38px;border-radius:11px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:15px}
+.view{display:none}.view.active{display:block;animation:fade .25s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:14px}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+.stat .lbl{font-size:12.5px;color:var(--muted);display:flex;gap:7px;align-items:center}
+.stat .num{font-size:23px;font-weight:800;margin-top:6px}
+.stat .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.stat.grad{background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;border:0}
+.stat.grad .lbl,.stat.grad .sub{color:#c7dbff}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--chip);border-radius:20px;padding:3px 10px;font-size:12px;font-weight:600}
+.chip.red{background:#fde8ea;color:#b91c1c}.chip.green{background:#e5f6ee;color:#146c43}.chip.amber{background:#fff3d6;color:#92600a}
+.sec-title{font-size:15.5px;font-weight:700;margin:20px 0 10px;display:flex;align-items:center;gap:8px}
+.sec-title a{margin-left:auto;font-size:12.5px;color:var(--brand);font-weight:600}
+.rowline{display:flex;align-items:center;gap:12px;padding:10px 2px;border-bottom:1px dashed var(--line)}
+.rowline:last-child{border-bottom:0}
+.rowline .ic{width:36px;height:36px;border-radius:11px;background:var(--chip);display:flex;align-items:center;justify-content:center;color:var(--brand)}
+.rowline .nm{font-weight:600;font-size:14px}.rowline .ds{font-size:12px;color:var(--muted)}
+.rowline .val{margin-left:auto;text-align:right;font-weight:700;font-size:14px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;padding:8px 6px;border-bottom:1px solid var(--line)}
+td{padding:9px 6px;border-bottom:1px dashed var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+.mini-btn{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-size:12.5px}
+label.fl{font-size:12.5px;font-weight:600;color:var(--muted);display:block;margin:10px 0 5px}
+input.inp,select.inp{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:11px;background:var(--card);color:var(--ink);font-size:14px}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:20px;padding:7px 14px;font-size:13px;font-weight:600;cursor:pointer}
+.seg button.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.note{background:#fff8e1;border:1px solid #ffe1a8;color:#7a5b00;border-radius:12px;padding:10px 12px;font-size:13px}
+[data-theme="dark"] .note{background:#2a2410;color:#f5d67b;border-color:#57481a}
+.bars{display:flex;align-items:flex-end;gap:10px;height:130px;padding-top:8px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:11.5px;color:var(--muted)}
+.bar .col{width:70%;max-width:38px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#7db8ff,#2563eb)}
+.cmp{height:14px;border-radius:10px;overflow:hidden;display:flex;background:var(--line)}
+.cmp .a{background:#2563eb}.cmp .b{background:#f59e0b}
+.banner{background:linear-gradient(90deg,#fff3d6,#ffe9b8);border:1px solid #ffd97a;color:#7a5b00;border-radius:14px;padding:11px 14px;font-size:13.5px;display:flex;gap:10px;align-items:center}
+[data-theme="dark"] .banner{background:#2a2410;color:#f5d67b;border-color:#57481a}
+.mock-tag{position:fixed;right:14px;top:12px;z-index:60;background:#111827;color:#fbbf24;font-size:11px;font-weight:700;border-radius:20px;padding:5px 12px;letter-spacing:.05em}
+/* ===== Bottom nav (mobile) ===== */
+.bottomnav{display:none}
+@media (max-width:920px){
+  .g4{grid-template-columns:repeat(2,1fr)}.g3,.g2{grid-template-columns:1fr}
+  .sidebar{display:none}.main{margin-left:0;padding:16px 14px 96px}
+  .bottomnav{display:flex;position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);z-index:40;padding:6px 4px calc(6px + env(safe-area-inset-bottom))}
+  .bottomnav button{flex:1;background:none;border:0;color:var(--muted);font-size:10.5px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:5px 0;cursor:pointer}
+  .bottomnav button i{font-size:18px}
+  .bottomnav button.on{color:var(--brand)}
+  table{font-size:12.5px}
+}
+</style>
+</head>
+<body>
+<div class="mock-tag">MOCKUP — DATA CONTOH</div>
+<div class="app">
+  <!-- ================= SIDEBAR ================= -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="logo"><i class="fa-solid fa-store"></i></div>
+      <div><b>Catatan APRILcell</b><small>Agen BRILink • Konter Om</small></div>
+    </div>
+    <div class="nav-group">Utama</div>
+    <div class="nav-item active" data-go="dashboard"><i class="fa-solid fa-house"></i>Dashboard</div>
+    <div class="nav-group">Jualan — Catat Penjualan Baru</div>
+    <div class="nav-item" data-go="jual"><i class="fa-solid fa-cart-shopping"></i>Jual Produk<span class="tag">BARU</span></div>
+    <div class="nav-item" data-go="jasa"><i class="fa-solid fa-hand-holding-dollar"></i>Catat Jasa<span class="tag">BARU</span></div>
+    <div class="nav-group">Kelola Toko — Baru</div>
+    <div class="nav-item" data-go="master"><i class="fa-solid fa-boxes-stacked"></i>Produk &amp; Jasa<span class="tag">BARU</span></div>
+    <div class="nav-item" data-go="saldoapp"><i class="fa-solid fa-mobile-screen-button"></i>Saldo Aplikasi<span class="dot"></span><span class="tag">BARU</span></div>
+    <div class="nav-item" data-go="untung"><i class="fa-solid fa-chart-line"></i>Keuntungan<span class="tag">BARU</span></div>
+    <div class="nav-group">Keuangan</div>
+    <div class="nav-item"><i class="fa-solid fa-wallet"></i>Rekening</div>
+    <div class="nav-item"><i class="fa-solid fa-money-bill-transfer"></i>Transaksi Saldo</div>
+    <div class="nav-item"><i class="fa-solid fa-arrow-right-arrow-left"></i>Transfer Antar-Rekening</div>
+    <div class="nav-item"><i class="fa-solid fa-book"></i>Utang dan Piutang</div>
+    <div class="nav-item"><i class="fa-solid fa-receipt"></i>Pengeluaran Harian</div>
+    <div class="nav-item"><i class="fa-solid fa-hand-holding-dollar"></i>Belum Diambil</div>
+    <div class="nav-group">Lainnya</div>
+    <div class="nav-item"><i class="fa-solid fa-chart-column"></i>Laporan Keuangan</div>
+    <div class="nav-item"><i class="fa-solid fa-clock-rotate-left"></i>Riwayat Transaksi</div>
+    <div class="nav-item"><i class="fa-solid fa-database"></i>Backup dan Restore</div>
+    <div class="nav-item"><i class="fa-solid fa-gear"></i>Pengaturan</div>
+    <div class="nav-item"><i class="fa-solid fa-right-from-bracket"></i>Logout</div>
+  </aside>
+
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="pageTitle">Dashboard</h1>
+        <div class="date">Kamis, 29 Oktober 2026 • Data di bawah ini contoh</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-brand" data-go="jual"><i class="fa-solid fa-plus"></i>Jual Produk</button>
+      <button class="btn btn-green" data-go="jasa"><i class="fa-solid fa-plus"></i>Catat Jasa</button>
+      <button class="icon-btn" id="themeBtn" title="Ganti terang / gelap"><i class="fa-solid fa-moon"></i></button>
+    </div>
+
+    <!-- ================= DASHBOARD ================= -->
+    <section class="view active" id="v-dashboard">
+      <div class="banner" style="margin-bottom:14px"><i class="fa-solid fa-triangle-exclamation"></i><div><b>Saldo Aplikasi A menipis</b> — sisa Rp 38.500 (batas minimum Rp 50.000). Waktunya deposit lagi.</div></div>
+      <div class="grid g4">
+        <div class="card stat grad"><div class="lbl"><i class="fa-solid fa-wallet"></i>Total Saldo Rekening</div><div class="num">Rp 4.250.000</div><div class="sub">dari 11 rekening</div></div>
+        <div class="card stat"><div class="lbl"><i class="fa-solid fa-mobile-screen-button"></i>Saldo Aplikasi</div><div class="num">Rp 612.500</div><div class="sub">3 aplikasi • <span style="color:var(--red);font-weight:700">1 menipis</span></div></div>
+        <div class="card stat"><div class="lbl"><i class="fa-solid fa-chart-line"></i>Untung Hari Ini</div><div class="num" style="color:var(--green)">Rp 47.500</div><div class="sub">produk Rp 30.000 • jasa Rp 17.500</div></div>
+        <div class="card stat"><div class="lbl"><i class="fa-solid fa-users"></i>Utang &amp; Piutang</div><div class="num">Rp 150.000</div><div class="sub">piutang 2 orang • utang Rp 0</div></div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-wallet" style="color:var(--brand)"></i>Saldo Rekening<a href="#">Lihat semua →</a></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-building-columns"></i></div><div><div class="nm">BRI</div><div class="ds">Rekening utama</div></div><div class="val">Rp 2.100.000</div></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-money-bill-wave"></i></div><div><div class="nm">Cash (laci)</div><div class="ds">Uang tunai</div></div><div class="val">Rp 850.000</div></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-mobile-screen"></i></div><div><div class="nm">DANA Rudi</div><div class="ds">E-wallet</div></div><div class="val">Rp 640.000</div></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-qrcode"></i></div><div><div class="nm">QRIS</div><div class="ds">Cair ke BRI</div></div><div class="val">Rp 210.000</div></div>
+        </div>
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-mobile-screen-button" style="color:var(--brand)"></i>Saldo Aplikasi<a href="#" data-go="saldoapp">Buka Saldo Aplikasi →</a></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-bolt"></i></div><div><div class="nm">Aplikasi A</div><div class="ds">XL, Telkomsel, Indosat</div></div><div class="val" style="color:var(--red)">Rp 38.500 ⚠</div></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-bolt"></i></div><div><div class="nm">Aplikasi B</div><div class="ds">Tri, Axis, by.U</div></div><div class="val">Rp 324.000</div></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-bolt"></i></div><div><div class="nm">Aplikasi C</div><div class="ds">Paket data &amp; token</div></div><div class="val">Rp 250.000</div></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-hand-holding-dollar"></i></div><div><div class="nm">Uang Belum Diambil</div><div class="ds">2 orang belum ambil</div></div><div class="val">Rp 300.000</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= JUAL PRODUK ================= -->
+    <section class="view" id="v-jual">
+      <div class="grid g2">
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-cart-shopping" style="color:var(--brand)"></i>Catat Penjualan Produk</div>
+          <label class="fl">Produk</label>
+          <select class="inp"><option>Pulsa XL — 10.000</option><option>Pulsa Telkomsel — 25.000</option><option>Kabel Data USB-C — 1 meter</option></select>
+          <label class="fl">Harga untuk</label>
+          <div class="seg"><button class="on">Ecer Rp 12.000</button><button>Grosir 1 Rp 11.500</button><button>Grosir 2 Rp 11.000</button></div>
+          <label class="fl">Jumlah</label>
+          <input class="inp" type="number" value="1">
+          <label class="fl">Pembeli bayar ke (Point 16)</label>
+          <select class="inp"><option>Cash (tunai)</option><option>BRI (transfer)</option><option>DANA Rudi</option><option>QRIS</option></select>
+          <label class="fl">Tanggal</label>
+          <input class="inp" type="date" value="2026-10-29">
+          <div class="note" style="margin-top:14px"><i class="fa-solid fa-bolt"></i> Otomatis: saldo <b>Aplikasi A</b> berkurang <b>Rp 9.800</b> (harga beli) &amp; untung <b>Rp 2.200</b> tercatat. Om nggak perlu input dua kali.</div>
+          <button class="btn btn-brand" style="margin-top:14px;width:100%;justify-content:center"><i class="fa-solid fa-floppy-disk"></i>Simpan Penjualan</button>
+        </div>
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-receipt" style="color:var(--brand)"></i>Penjualan Hari Ini</div>
+          <table>
+            <tr><th>Jam</th><th>Produk</th><th>Harga</th><th>Untung</th><th></th></tr>
+            <tr><td>09:12</td><td>Pulsa XL 10.000</td><td>Rp 12.000</td><td style="color:var(--green);font-weight:700">+2.200</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+            <tr><td>10:03</td><td>Kabel Data USB-C</td><td>Rp 25.000</td><td style="color:var(--green);font-weight:700">+8.000</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+            <tr><td>11:47</td><td>Pulsa Telkomsel 25.000</td><td>Rp 28.500</td><td style="color:var(--green);font-weight:700">+2.750</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+          </table>
+          <div class="ds" style="font-size:12.5px;color:var(--muted);margin-top:10px">Salah input? Tinggal klik pensil — saldo &amp; untung ikut dibenerin otomatis.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CATAT JASA ================= -->
+    <section class="view" id="v-jasa">
+      <div class="grid g2">
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-hand-holding-dollar" style="color:var(--brand)"></i>Catat Jasa</div>
+          <label class="fl">Jenis jasa</label>
+          <select class="inp"><option>Isi E-Wallet — DANA</option><option>Isi E-Wallet — GoPay</option><option>Tarik Tunai BRILink</option><option>Transfer Antar Bank</option></select>
+          <label class="fl">Nominal pokok (uang yang diteruskan)</label>
+          <input class="inp" type="text" value="Rp 100.000">
+          <label class="fl">Fee admin (keuntungan om — ketik manual)</label>
+          <input class="inp" type="text" value="Rp 2.500">
+          <label class="fl">Pelanggan bayar ke</label>
+          <select class="inp"><option>Cash (tunai)</option><option>BRI (transfer)</option><option>QRIS</option></select>
+          <label class="fl">Diteruskan dari saldo</label>
+          <select class="inp"><option>DANA Rudi</option><option>BRI</option><option>GoPay</option></select>
+          <label class="fl">Tanggal</label>
+          <input class="inp" type="date" value="2026-10-29">
+          <div class="note" style="margin-top:14px"><i class="fa-solid fa-circle-info"></i> Pokok Rp 100.000 itu <b>uang lewat</b> — bukan keuntungan. Yang tercatat sebagai untung cuma fee <b>Rp 2.500</b>.</div>
+          <button class="btn btn-green" style="margin-top:14px;width:100%;justify-content:center"><i class="fa-solid fa-floppy-disk"></i>Simpan Jasa</button>
+        </div>
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-receipt" style="color:var(--brand)"></i>Jasa Hari Ini</div>
+          <table>
+            <tr><th>Jam</th><th>Jasa</th><th>Pokok</th><th>Fee</th><th></th></tr>
+            <tr><td>08:55</td><td>Isi DANA</td><td>Rp 100.000</td><td style="color:var(--green);font-weight:700">+2.500</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+            <tr><td>10:20</td><td>Tarik Tunai</td><td>Rp 500.000</td><td style="color:var(--green);font-weight:700">+5.000</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+            <tr><td>12:05</td><td>Isi GoPay</td><td>Rp 50.000</td><td style="color:var(--green);font-weight:700">+2.000</td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button> <button class="mini-btn"><i class="fa-solid fa-trash"></i></button></td></tr>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= MASTER ================= -->
+    <section class="view" id="v-master">
+      <div class="card">
+        <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-boxes-stacked" style="color:var(--brand)"></i>Master Produk &amp; Jasa
+          <span style="margin-left:auto;display:flex;gap:8px"><input class="inp" style="width:210px" placeholder="🔍 Cari produk…"><button class="btn btn-brand"><i class="fa-solid fa-plus"></i>Tambah</button></span>
+        </div>
+        <div style="overflow-x:auto">
+        <table>
+          <tr><th>Nama</th><th>Jenis</th><th>Operator</th><th>Modal</th><th>Ecer</th><th>Grosir 1</th><th>Grosir 2</th><th>Stok</th><th>Status</th><th></th></tr>
+          <tr><td><b>Pulsa XL 10.000</b></td><td><span class="chip">Produk</span></td><td>XL</td><td>9.800</td><td>12.000</td><td>11.500</td><td>11.000</td><td style="color:var(--muted)">— (saldo aplikasi)</td><td><span class="chip green">Aktif</span></td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button></td></tr>
+          <tr><td><b>Kabel Data USB-C</b></td><td><span class="chip">Produk</span></td><td>Aksesoris</td><td>17.000</td><td>25.000</td><td>23.000</td><td>21.000</td><td><b>14 pcs</b> <span class="chip amber">mau habis</span></td><td><span class="chip green">Aktif</span></td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button></td></tr>
+          <tr><td><b>Isi E-Wallet DANA</b></td><td><span class="chip" style="background:#fdf2e3;color:#92600a">Jasa</span></td><td>DANA</td><td colspan="4" style="color:var(--muted)">Fee diketik manual tiap transaksi</td><td style="color:var(--muted)">—</td><td><span class="chip green">Aktif</span></td><td><button class="mini-btn"><i class="fa-solid fa-pen"></i></button></td></tr>
+        </table>
+        </div>
+        <div style="font-size:12.5px;color:var(--muted);margin-top:10px">Satu daftar untuk produk + jasa (flat 1 tingkat). Stok cuma muncul buat barang fisik yang saklar "Pakai Stok"-nya nyala.</div>
+      </div>
+    </section>
+
+    <!-- ================= SALDO APLIKASI ================= -->
+    <section class="view" id="v-saldoapp">
+      <div class="grid g3">
+        <div class="card stat"><div class="lbl"><i class="fa-solid fa-bolt"></i>Aplikasi A — XL, Telkomsel, Indosat</div><div class="num" style="color:var(--red)">Rp 38.500</div><div class="sub">Batas minimum Rp 50.000 • <b style="color:var(--red)">MENIPIS</b></div><button class="btn btn-brand" style="margin-top:10px"><i class="fa-solid fa-plus"></i>Tambah Saldo</button></div>
+        <div class="card stat"><div class="lbl"><i class="fa-solid fa-bolt"></i>Aplikasi B — Tri, Axis, by.U</div><div class="num">Rp 324.000</div><div class="sub">Batas minimum Rp 50.000 • Aman</div><button class="btn btn-brand" style="margin-top:10px"><i class="fa-solid fa-plus"></i>Tambah Saldo</button></div>
+        <div class="card stat"><div class="lbl"><i class="fa-solid fa-bolt"></i>Aplikasi C — Paket data &amp; token</div><div class="num">Rp 250.000</div><div class="sub">Batas minimum Rp 25.000 • Aman</div><button class="btn btn-brand" style="margin-top:10px"><i class="fa-solid fa-plus"></i>Tambah Saldo</button></div>
+      </div>
+      <div class="card" style="margin-top:14px">
+        <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-list" style="color:var(--brand)"></i>Buku Mutasi — Aplikasi A<a href="#">Rekonsiliasi: saldo asli Rp 38.500 • selisih Rp 0 ✓</a></div>
+        <div style="overflow-x:auto">
+        <table>
+          <tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Nominal</th><th>Saldo Sesudah</th></tr>
+          <tr><td>29 Okt, 09:12</td><td><span class="chip red">Terpakai penjualan</span></td><td>Pulsa XL 10.000 → Jual Produk #128</td><td>−9.800</td><td><b>Rp 38.500</b></td></tr>
+          <tr><td>28 Okt, 15:40</td><td><span class="chip green">Tambah saldo</span></td><td>Deposit dari BRI <span class="chip">nyambung</span></td><td>+500.000</td><td>Rp 548.300</td></tr>
+          <tr><td>28 Okt, 10:02</td><td><span class="chip amber">Penyesuaian</span></td><td>Koreksi: selisih hitung ulang <span class="chip">manual</span></td><td>−1.700</td><td>Rp 48.300</td></tr>
+        </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= INFO (menu lama) ================= -->
+    <section class="view" id="v-info">
+      <div class="card">
+        <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-circle-info" style="color:var(--brand)"></i><span id="infoTitle">Menu</span></div>
+        <p id="infoDesc" style="font-size:14.5px;line-height:1.6;margin:6px 0"></p>
+        <div class="note"><i class="fa-solid fa-lightbulb"></i> Ini halaman lama dari aplikasi sekarang — tampilannya nanti disegarkan mengikuti gaya mockup ini (ikon Font Awesome, terang/gelap, responsive), isinya tetap sama.</div>
+        <div id="infoForm" style="margin-top:16px"></div>
+      </div>
+    </section>
+
+    <!-- ================= KEUNTUNGAN ================= -->
+    <section class="view" id="v-untung">
+      <div class="card stat grad" style="margin-bottom:14px"><div class="lbl"><i class="fa-solid fa-chart-line"></i>Total Untung — Oktober 2026</div><div class="num" style="font-size:30px">Rp 1.284.500</div><div class="sub">dari 214 transaksi • pokok jasa TIDAK ikut dihitung</div></div>
+      <div class="seg" style="margin-bottom:14px"><button>Hari Ini</button><button>Minggu Ini</button><button class="on">Bulan Ini</button><button><i class="fa-solid fa-calendar"></i> Pilih Tanggal</button></div>
+      <div class="grid g2">
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-cart-shopping" style="color:var(--brand)"></i>Dari Jualan Produk</div>
+          <div style="font-size:24px;font-weight:800">Rp 842.500</div><div style="color:var(--muted);font-size:12.5px">132 transaksi</div>
+          <div class="sec-title"><i class="fa-solid fa-hand-holding-dollar" style="color:var(--amber)"></i>Dari Jasa (fee admin)</div>
+          <div style="font-size:24px;font-weight:800">Rp 442.000</div><div style="color:var(--muted);font-size:12.5px">82 transaksi</div>
+          <div class="cmp" style="margin-top:14px"><div class="a" style="width:66%"></div><div class="b" style="width:34%"></div></div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px"><span>■ Produk 66%</span><span>■ Jasa 34%</span></div>
+        </div>
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-chart-column" style="color:var(--brand)"></i>Untung 7 Hari Terakhir</div>
+          <div class="bars">
+            <div class="bar"><div class="col" style="height:45%"></div>Sen</div>
+            <div class="bar"><div class="col" style="height:70%"></div>Sel</div>
+            <div class="bar"><div class="col" style="height:55%"></div>Rab</div>
+            <div class="bar"><div class="col" style="height:85%"></div>Kam</div>
+            <div class="bar"><div class="col" style="height:65%"></div>Jum</div>
+            <div class="bar"><div class="col" style="height:100%"></div>Sab</div>
+            <div class="bar"><div class="col" style="height:38%"></div>Min</div>
+          </div>
+        </div>
+      </div>
+      <div class="grid g2" style="margin-top:14px">
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-receipt" style="color:var(--brand)"></i>Yang Bikin Untung (terbaru)</div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-mobile-screen"></i></div><div><div class="nm">Pulsa XL 10rb</div><div class="ds">Hari ini 09:12</div></div><div class="val" style="color:var(--green)">+Rp 2.200</div></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-wallet"></i></div><div><div class="nm">Isi DANA 100rb — fee</div><div class="ds">Hari ini 08:55</div></div><div class="val" style="color:var(--green)">+Rp 2.500</div></div>
+          <div class="rowline"><div class="ic"><i class="fa-solid fa-plug"></i></div><div><div class="nm">Kabel Data USB-C</div><div class="ds">Hari ini 10:03</div></div><div class="val" style="color:var(--green)">+Rp 8.000</div></div>
+        </div>
+        <div class="card">
+          <div class="sec-title" style="margin-top:0"><i class="fa-solid fa-trophy" style="color:var(--amber)"></i>Paling Nguntungin Bulan Ini</div>
+          <div class="rowline"><div class="nm">1. Kabel Data USB-C</div><div class="val">Rp 216.000</div></div>
+          <div class="rowline"><div class="nm">2. Isi E-Wallet DANA (fee)</div><div class="val">Rp 187.500</div></div>
+          <div class="rowline"><div class="nm">3. Pulsa Telkomsel 25rb</div><div class="val">Rp 154.000</div></div>
+          <div class="rowline"><div class="nm">4. Tarik Tunai BRILink (fee)</div><div class="val">Rp 132.000</div></div>
+          <div class="rowline"><div class="nm">5. Pulsa XL 10rb</div><div class="val">Rp 118.800</div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= BOTTOM NAV (HP) ================= -->
+<nav class="bottomnav">
+  <button class="on" data-go="dashboard"><i class="fa-solid fa-house"></i>Beranda</button>
+  <button data-go="jual"><i class="fa-solid fa-cart-shopping"></i>Jual</button>
+  <button data-go="jasa"><i class="fa-solid fa-hand-holding-dollar"></i>Jasa</button>
+  <button data-go="untung"><i class="fa-solid fa-chart-line"></i>Untung</button>
+  <button data-go="saldoapp"><i class="fa-solid fa-mobile-screen-button"></i>Saldo App</button>
+</nav>
+
+<script>
+const titles={dashboard:"Dashboard",jual:"Jual Produk",jasa:"Catat Jasa",master:"Produk & Jasa",saldoapp:"Saldo Aplikasi",untung:"Keuntungan"};
+function go(id){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.getElementById('v-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.go===id));
+  document.querySelectorAll('.bottomnav button').forEach(n=>n.classList.toggle('on',n.dataset.go===id));
+  document.getElementById('pageTitle').textContent=titles[id]||'Dashboard';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
+const infoMap={
+ "Rekening":{d:"Rumahnya semua rekening bank, e-wallet, dan Cash om. Di sini om TAMBAH rekening baru — namanya BEBAS, terserah om (misal: DANA Rudi, BRI Utama, Cash Laci, QRIS). Isi saldo awalnya juga di sini.",f:'<div class="sec-title"><i class="fa-solid fa-plus" style="color:var(--brand)"></i>Contoh form Tambah Rekening</div><label class="fl">Nama rekening (bebas)</label><input class="inp" placeholder="cth: DANA Rudi / BRI Utama / Cash Laci / QRIS"><label class="fl">Jenis</label><select class="inp"><option>Bank</option><option>E-Wallet</option><option>Tunai / Cash</option><option>Lainnya</option></select><label class="fl">Saldo awal sekarang</label><input class="inp" placeholder="cth: 250000"><label class="fl">Catatan (boleh kosong)</label><input class="inp" placeholder="cth: rekening buat terima transfer pelanggan"><button class="btn btn-brand" style="margin-top:14px"><i class="fa-solid fa-floppy-disk"></i>Simpan Rekening</button>'},
+ "Transaksi Saldo":"Catat uang masuk / keluar di rekening mana pun secara manual, termasuk penyesuaian saldo (wajib isi alasan). Semua gerak saldo rekening tercatat di sini dan di Riwayat.",
+ "Transfer Antar-Rekening":"Pindahin uang antar rekening om sendiri (misal Cash disetor ke BRI). Sifatnya cuma pindah tempat — total uang om tetap, tidak dihitung pemasukan/pengeluaran.",
+ "Utang dan Piutang":"Buku utang & piutang per orang: siapa ngutang ke om, om ngutang ke siapa, cicilan/pelunasannya tercatat per tanggal.",
+ "Pengeluaran Harian":"Catat pengeluaran operasional & harian (makan, bensin, token listrik, dll) per kategori — biar kelihatan uang bocornya ke mana.",
+ "Belum Diambil":"Uang masuk yang orangnya belum ambil (misal titipan transfer). Bisa diterima/diserahkan sebagian dulu, sisanya menyusul — semua tercatat.",
+ "Laporan Keuangan":"Laporan harian, mingguan (Senin–Minggu), bulanan, atau rentang tanggal pilihan — bisa diekspor CSV dan dicetak.",
+ "Riwayat Transaksi":"Jejak semua catatan: transaksi, penjualan, jasa, mutasi, plus koreksi/pembalikan (audit). Salah input bisa ditelusur dari sini.",
+ "Backup dan Restore":"Cadangkan database ke file & pulihkan lagi. Ada backup otomatis sebelum restore, jadi data aman.",
+ "Pengaturan":"Pengaturan aplikasi: akun login, dan pilihan tampilan (termasuk mode terang / gelap).",
+ "Logout":"Keluar dari aplikasi. Sampai jumpa, om!"
+};
+document.querySelectorAll('.nav-item:not([data-go])').forEach(n=>{
+  n.addEventListener('click',()=>{
+    const name=n.textContent.trim();
+    const info=infoMap[name]||{d:""};
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    document.getElementById('v-info').classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(x=>x.classList.toggle('active',x===n));
+    document.getElementById('infoTitle').textContent=name;
+    document.getElementById('infoDesc').textContent=(typeof info==='string')?info:info.d;
+    document.getElementById('infoForm').innerHTML=(typeof info==='object'&&info.f)?info.f:"";
+    document.getElementById('pageTitle').textContent=name;
+    window.scrollTo({top:0,behavior:'smooth'});
+  });
+});
+document.querySelectorAll('.seg').forEach(seg=>seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{seg.querySelectorAll('button').forEach(x=>x.classList.remove('on'));b.classList.add('on')})));
+const tb=document.getElementById('themeBtn');
+tb.addEventListener('click',()=>{
+  const h=document.documentElement;
+  const dark=h.dataset.theme!=='dark';
+  h.dataset.theme=dark?'dark':'light';
+  tb.innerHTML='<i class="fa-solid fa-'+(dark?'sun':'moon')+'"></i>';
+});
+</script>
+</body>
+</html>
